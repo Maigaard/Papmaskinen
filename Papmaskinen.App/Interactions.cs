@@ -1,4 +1,5 @@
 using System.Net;
+using Discord;
 using Discord.Rest;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -40,6 +41,17 @@ namespace Papmaskinen.App
 							await response.WriteAsJsonAsync(new { type = Discord.InteractionResponseType.Pong });
 							break;
 						case Discord.InteractionType.ApplicationCommand:
+							if (interaction.Data is RestApplicationCommand command && command.Name == "Hello")
+							{
+								await response.WriteAsJsonAsync(new
+								{
+									type = InteractionResponseType.ChannelMessageWithSource,
+									data = new
+									{
+										content = "hello world",
+									},
+								});
+							}
 
 							break;
 						case Discord.InteractionType.MessageComponent:
