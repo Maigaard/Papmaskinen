@@ -1,10 +1,10 @@
-﻿namespace Papmaskinen.Bot.Services
+﻿namespace Papmaskinen.Bot.Setup
 {
 	public class DiscordSettings
 	{
 		public string? BotToken { get; set; }
 
-		public Schedule NextEvent { get; set; }
+		public Schedule NextEvent { get; set; } = new();
 
 		public class Schedule
 		{
