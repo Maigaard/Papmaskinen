@@ -2,6 +2,6 @@
 {
 	internal class DiscordSettings
 	{
-		public string? PublicKey { get; set; }
+		public string? BotToken { get; set; }
 	}
 }
