@@ -24,8 +24,5 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</None>
-		<None Update="Settings.job">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 </Project>
