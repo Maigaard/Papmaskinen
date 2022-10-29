@@ -17,9 +17,9 @@ namespace Papmaskinen.Bot
 - Game suggestions: reply to this message with wishes/suggestions
 
 Attending:
-\|\|
+TBD
 Hopefully:
-\|\|
+TBD
 If not meantioned but you'd still like to attend please confirm to the role call below.
 @everyone";
 
@@ -32,15 +32,34 @@ If not meantioned but you'd still like to attend please confirm to the role call
 			this.client = client;
 		}
 
-		public async Task CronFunction([TimerTrigger("%Discord:NextEvent:Schedule%", RunOnStartup = true)] TimerInfo timer)
+		public async Task CronFunction([TimerTrigger("%Discord:NextEvent:Schedule%", RunOnStartup = false)] TimerInfo timer)
 		{
 			var channel = await this.client.GetChannelAsync(this.settings.NextEvent.ChannelId);
 			if (channel is ITextChannel ch)
 			{
+				var pinnedMessages = await ch.GetPinnedMessagesAsync();
+				foreach (var pinnedMessage in pinnedMessages.Where(m => m.Author.IsBot))
+				{
+					if (pinnedMessage is IUserMessage userMessage)
+					{
+						await userMessage.UnpinAsync();
+					}
+				}
+
 				DateTime now = DateTime.Now;
 				DateTime lastDayOfMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1).AddDays(-1);
 				string date = this.FindFriday(lastDayOfMonth).ToString("D");
-				await ch.SendMessageAsync(string.Format(ScheduledMessage, date), allowedMentions: new AllowedMentions(AllowedMentionTypes.Everyone));
+				var message = await ch.SendMessageAsync(string.Format(ScheduledMessage, date), allowedMentions: new AllowedMentions(AllowedMentionTypes.Everyone));
+				var reactions = new List<IEmote>
+				{
+					Emotes.ThumbsUp,
+					Emotes.FingersCrossed,
+					Emotes.ThumbsDown,
+					Emotes.House,
+					Emotes.GameDie,
+				};
+				await message.AddReactionsAsync(reactions);
+				await message.PinAsync();
 			}
 		}
 

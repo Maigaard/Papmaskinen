@@ -27,8 +27,8 @@ namespace Papmaskinen.Bot.Setup
 			};
 
 			this.client.MessageReceived += Messages.MessageReceived;
-			this.client.ReactionAdded += this.reactions.Added;
-			this.client.ReactionRemoved += this.reactions.Removed;
+			this.client.ReactionAdded += this.reactions.NextEventReactions;
+			this.client.ReactionRemoved += this.reactions.NextEventReactions;
 
 			await this.client.LoginAsync(TokenType.Bot, this.settings.BotToken);
 			await this.client.StartAsync();

@@ -1,7 +1,5 @@
-﻿using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Setup;
 
 IHost host = Host.CreateDefaultBuilder(args)
