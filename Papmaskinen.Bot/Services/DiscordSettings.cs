@@ -1,7 +1,14 @@
 ﻿namespace Papmaskinen.Bot.Services
 {
-	internal class DiscordSettings
+	public class DiscordSettings
 	{
 		public string? BotToken { get; set; }
+
+		public Schedule NextEvent { get; set; }
+
+		public class Schedule
+		{
+			public ulong ChannelId { get; set; } = 0;
+		}
 	}
 }

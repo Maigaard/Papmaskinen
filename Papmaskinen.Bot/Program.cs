@@ -12,6 +12,11 @@ using Papmaskinen.Bot.Services;
 IHost host = Host.CreateDefaultBuilder(args)
 		.ConfigureAppConfiguration(ConfigureAppConfiguration)
 		.ConfigureServices(ConfigureServices)
+		.ConfigureWebJobs(builder =>
+		{
+			builder.AddAzureStorageCoreServices();
+			builder.AddTimers();
+		})
 		.Build();
 var config = host.Services.GetService<IOptionsSnapshot<DiscordSettings>>();
 
@@ -31,7 +36,7 @@ client.MessageReceived += async (SocketMessage message) =>
 {
 	if (message is SocketUserMessage)
 	{
-		if (string.Equals(message.Content, "hello", StringComparison.OrdinalIgnoreCase))
+		if (string.Equals(message.Content, "hello2", StringComparison.OrdinalIgnoreCase))
 		{
 			await message.Channel.SendMessageAsync(message.Author.Username);
 		}
