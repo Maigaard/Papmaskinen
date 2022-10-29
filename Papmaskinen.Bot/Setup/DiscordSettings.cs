@@ -4,6 +4,8 @@
 	{
 		public string? BotToken { get; set; }
 
+		public ulong BotId { get; set; } = 0;
+
 		public Schedule NextEvent { get; set; } = new();
 
 		public class Schedule

@@ -1,23 +1,37 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Events;
 
 namespace Papmaskinen.Bot.Setup
 {
-	internal static class ConfigureSocketClient
+	public class ConfigureSocketClient
 	{
-		internal static async Task Setup(DiscordSocketClient client, DiscordSettings settings)
+		private readonly DiscordSocketClient client;
+		private readonly Reactions reactions;
+		private readonly DiscordSettings settings;
+
+		public ConfigureSocketClient(DiscordSocketClient client, IOptionsMonitor<DiscordSettings> settings, Reactions reactions)
 		{
-			client.Log += (LogMessage msg) =>
+			this.client = client;
+			this.reactions = reactions;
+			this.settings = settings.CurrentValue;
+		}
+
+		internal async Task Setup()
+		{
+			this.client.Log += (LogMessage msg) =>
 			{
 				Console.WriteLine(msg.ToString());
 				return Task.CompletedTask;
 			};
 
-			client.MessageReceived += MessageReceived.HelloMessage;
+			this.client.MessageReceived += Messages.MessageReceived;
+			this.client.ReactionAdded += this.reactions.Added;
+			this.client.ReactionRemoved += this.reactions.Removed;
 
-			await client.LoginAsync(TokenType.Bot, settings.BotToken);
-			await client.StartAsync();
+			await this.client.LoginAsync(TokenType.Bot, this.settings.BotToken);
+			await this.client.StartAsync();
 		}
 	}
 }

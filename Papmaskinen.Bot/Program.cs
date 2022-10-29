@@ -10,9 +10,8 @@ IHost host = Host.CreateDefaultBuilder(args)
 		.ConfigureWebJobs(Configurations.ConfigureWebJobs)
 		.Build();
 
-var config = host.Services.GetService<IOptionsMonitor<DiscordSettings>>();
-var client = host.Services.GetService<DiscordSocketClient>();
+var config = host.Services.GetService<ConfigureSocketClient>();
 
-await ConfigureSocketClient.Setup(client!, config!.CurrentValue);
+await config!.Setup();
 
 await host.RunAsync();

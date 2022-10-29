@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Papmaskinen.Bot.Events;
 
 namespace Papmaskinen.Bot.Setup
 {
@@ -37,6 +38,8 @@ namespace Papmaskinen.Bot.Setup
 				};
 				return new(socketConfig);
 			});
+			services.AddScoped<ConfigureSocketClient>();
+			services.AddScoped<Reactions>();
 		}
 
 		internal static void ConfigureWebJobs(IWebJobsBuilder builder)
