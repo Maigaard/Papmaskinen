@@ -62,7 +62,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 
 		public virtual async Task<TResult?> PutAsync<TResult>(string url, object data)
 		{
-			TResult result = default;
+			TResult? result = default;
 
 			if (data is null)
 			{

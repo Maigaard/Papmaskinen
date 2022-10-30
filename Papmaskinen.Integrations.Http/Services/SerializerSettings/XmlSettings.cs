@@ -4,6 +4,6 @@ namespace Papmaskinen.Integrations.Http.Services.SerializerSettings
 {
 	public class XmlSettings
 	{
-		public XmlSerializerNamespaces Namespaces { get; set; }
+		public XmlSerializerNamespaces? Namespaces { get; set; }
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.InteropServices;
 
 namespace Papmaskinen.Integrations.Http.Services.Implementation
 {
@@ -22,6 +23,6 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 		public abstract HttpContent Serialize<TContent>(TContent data, TSettings? settings = null)
 			where TContent : class;
 
-		protected abstract TResult Deserialize<TResult>(string responseText);
+		protected abstract TResult? Deserialize<TResult>(string responseText);
 	}
 }

@@ -17,7 +17,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			return new StringContent(serializedData, Encoding.UTF8, "application/json");
 		}
 
-		protected override TResult Deserialize<TResult>(string responseText)
+		protected override TResult? Deserialize<TResult>(string responseText) where TResult : default
 		{
 			return JsonConvert.DeserializeObject<TResult?>(responseText) ?? default;
 		}
