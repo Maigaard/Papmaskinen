@@ -39,7 +39,9 @@ namespace Papmaskinen.Bot.Setup
 			this.client.SlashCommandExecuted += this.slashCommands.NominationCommand;
 			this.client.MessageReceived += Messages.MessageReceived;
 			this.client.ReactionAdded += this.reactions.NextEventReactions;
+			this.client.ReactionAdded += this.reactions.NominationReactions;
 			this.client.ReactionRemoved += this.reactions.NextEventReactions;
+			this.client.ReactionRemoved += this.reactions.NominationReactions;
 
 			await this.client.LoginAsync(TokenType.Bot, this.settings.BotToken);
 			await this.client.StartAsync();

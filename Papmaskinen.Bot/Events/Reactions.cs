@@ -14,7 +14,7 @@ This place is for nominating and voting on games for future PapClub events.
 
 Procedure: To nominate a game use command 'nominate', and add a boardgamegeek link to your game. 
 
-Every month each member has one vote to be used on any of the nominations.
+Every month each member has one vote, to be used on any of the nominations.
 A week before an event the highest voted nomination is chosen as the primary game.
 
 Voting Emoji: (\:clockX\: where X is the current month)
@@ -43,10 +43,12 @@ Votes:
 			this.settings = options.CurrentValue;
 		}
 
-		internal async Task NextEventReactions(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
+		internal async Task NextEventReactions(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
 		{
 			IUserMessage message = await messageCache.GetOrDownloadAsync();
-			if (this.ShouldReact(reaction, this.settings.NextEvent.ChannelId) && message.Author.IsBot)
+			if (channelCache.Id == this.settings.Nominations.ChannelId &&
+				reaction.UserId != this.settings.BotId &&
+				message.Author.IsBot)
 			{
 				await ReactToEmote(reaction, message!, Emotes.ThumbsUp, "Attending");
 				await ReactToEmote(reaction, message!, Emotes.FingersCrossed, "Hopefully");
@@ -57,7 +59,9 @@ Votes:
 
 		internal async Task NominationReactions(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
 		{
-			if (this.ShouldReact(reaction, this.settings.Nominations.ChannelId) && Emotes.Clocks.Any(c => c.Name == reaction.Emote.Name))
+			if (channelCache.Id == this.settings.Nominations.ChannelId &&
+				reaction.UserId != this.settings.BotId &&
+				Emotes.Clocks.Any(c => c.Name == reaction.Emote.Name))
 			{
 				IUserMessage message = await messageCache.GetOrDownloadAsync();
 				IMessageChannel channel = await channelCache.GetOrDownloadAsync();
@@ -69,7 +73,7 @@ Votes:
 					await pinnedMessage.PinAsync();
 				}
 
-				string nominationTitle = Regex.Match(message.Content, @"^([\w:\- ]+)\r\n").Value;
+				string nominationTitle = Regex.Match(message.Content, @"^([\w:\- ]+)[\r\n]*").Value;
 				int nominationVotes = message.Reactions.Where(r => Emotes.Clocks.Any(c => c.Name == r.Key.Name)).Sum(r => r.Value.ReactionCount);
 
 				var titleRegex = new Regex($@"^({nominationTitle} : )([0-9]{{1,3}})", RegexOptions.Multiline);
@@ -80,9 +84,11 @@ Votes:
 				}
 				else
 				{
-					newContent = $"{pinnedMessage.Content}\\r\\n{nominationTitle} : {nominationVotes}";
+					newContent = $"{pinnedMessage.Content}\r\n{nominationTitle} : {nominationVotes}";
 				}
 
+				// Throws "Unknown Channel (MESSAGE_UPDATE)" error, after updating message.
+				// Not sure what that's about. But doesn't prevent event from excuting, as far as i can tell.
 				await pinnedMessage.ModifyAsync(prop => prop.Content = newContent);
 			}
 		}
@@ -101,11 +107,6 @@ Votes:
 			var users = await message.GetReactionUsersAsync(emote, 20).FlattenAsync();
 			var userNames = users.Where(u => !u.IsBot).Select(u => u is IGuildUser user ? user.Nickname : u.Username);
 			return userNames.Any() ? string.Join(", ", userNames) : "TBD";
-		}
-
-		private bool ShouldReact(SocketReaction reaction, ulong channelId)
-		{
-			return reaction.Channel.Id == channelId && reaction.UserId != this.settings.BotId;
 		}
 	}
 }
