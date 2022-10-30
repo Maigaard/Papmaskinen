@@ -6,7 +6,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 {
 	public class JsonSerializer : AbstractSerializer<JsonSettings>, ISerializer<JsonSettings>
 	{
-		public override HttpContent Serialize<TContent>(TContent data, JsonSettings settings = null)
+		public override HttpContent Serialize<TContent>(TContent data, JsonSettings? settings = null)
 		{
 			string serializedData = string.Empty;
 			if (data != null)
@@ -19,7 +19,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 
 		protected override TResult Deserialize<TResult>(string responseText)
 		{
-			return JsonConvert.DeserializeObject<TResult>(responseText);
+			return JsonConvert.DeserializeObject<TResult?>(responseText) ?? default;
 		}
 	}
 }

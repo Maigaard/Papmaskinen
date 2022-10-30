@@ -35,7 +35,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			}
 		}
 
-		public virtual async Task<TResult> GetAsync<TResult>(string url, bool defaultIfNotFound = false)
+		public virtual async Task<TResult?> GetAsync<TResult>(string url, bool defaultIfNotFound = false)
 		{
 			using (var response = await this.GetRequestAsync(url))
 			{
@@ -45,11 +45,11 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			}
 		}
 
-		public virtual async Task<TResult> PostAsync<TResult>(string url, object? data)
+		public virtual async Task<TResult?> PostAsync<TResult>(string url, object? data)
 		{
 			TResult? result = default;
 
-			HttpContent content = data == null ? null : this.serializer.Serialize(data);
+			HttpContent? content = data == null ? null : this.serializer.Serialize(data);
 
 			using (var response = await this.MakeRequestAsync(url, HttpMethod.Post, content))
 			{
@@ -60,17 +60,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			return result;
 		}
 
-		public virtual async Task PutAsync(string url, object data)
-		{
-			HttpContent content = data == null ? null : this.serializer.Serialize(data);
-
-			using (var response = await this.MakeRequestAsync(url, HttpMethod.Put, content))
-			{
-				await this.ValidateResponseAsync(response, defaultIfNotFound: true);
-			}
-		}
-
-		public virtual async Task<TResult> PutAsync<TResult>(string url, object data)
+		public virtual async Task<TResult?> PutAsync<TResult>(string url, object data)
 		{
 			TResult result = default;
 
@@ -89,7 +79,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			return result;
 		}
 
-		public virtual async Task<HttpResponseMessage> MakeRequestAsync(string url, HttpMethod method, HttpContent content = null)
+		public virtual async Task<HttpResponseMessage> MakeRequestAsync(string url, HttpMethod method, HttpContent? content = null)
 		{
 			if (string.IsNullOrWhiteSpace(url))
 			{
@@ -108,7 +98,7 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			return response;
 		}
 
-		public virtual async Task ValidateResponseAsync(HttpResponseMessage response, bool defaultIfNotFound)
+		public virtual Task ValidateResponseAsync(HttpResponseMessage response, bool defaultIfNotFound)
 		{
 			try
 			{
@@ -116,6 +106,8 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 				{
 					response.EnsureSuccessStatusCode();
 				}
+
+				return Task.CompletedTask;
 			}
 			catch (Exception)
 			{

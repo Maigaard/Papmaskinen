@@ -6,13 +6,13 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 {
 	public class XmlSerializer : AbstractSerializer<XmlSettings>, ISerializer<XmlSettings>
 	{
-		public override HttpContent Serialize<TContent>(TContent data, XmlSettings settings = null)
+		public override HttpContent Serialize<TContent>(TContent data, XmlSettings? settings = null)
 		{
 			var serializer = new System.Xml.Serialization.XmlSerializer(typeof(TContent));
 			var stringWriter = new Utf8StringWriter();
 			using (XmlWriter writer = XmlWriter.Create(stringWriter, new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 }))
 			{
-				serializer.Serialize(writer, data, settings.Namespaces);
+				serializer.Serialize(writer, data, settings?.Namespaces);
 			}
 
 			return new StringContent(stringWriter.ToString(), Encoding.UTF8, "text/xml");
@@ -22,14 +22,14 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 		{
 			var serializer = new System.Xml.Serialization.XmlSerializer(typeof(TResult));
 
-			TResult result;
+			TResult? result;
 
 			using (TextReader reader = new StringReader(responseText))
 			{
-				result = (TResult)serializer.Deserialize(reader);
+				result = (TResult?)serializer.Deserialize(reader);
 			}
 
-			return result;
+			return result ?? default;
 		}
 
 		private class Utf8StringWriter : StringWriter
