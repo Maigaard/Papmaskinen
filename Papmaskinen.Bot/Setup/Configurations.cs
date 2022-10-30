@@ -21,9 +21,9 @@ namespace Papmaskinen.Bot.Setup
 				TokenCredential tokenCredential = new DefaultAzureCredential();
 
 				options.Connect(configurationUri, tokenCredential);
-
+				string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? context.HostingEnvironment.EnvironmentName;
 				options.Select(KeyFilter.Any);
-				options.Select(KeyFilter.Any, "Production");
+				options.Select(KeyFilter.Any, envName);
 			});
 		}
 
@@ -34,12 +34,14 @@ namespace Papmaskinen.Bot.Setup
 			{
 				DiscordSocketConfig socketConfig = new()
 				{
-					GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent,
+					GatewayIntents = GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
 				};
 				return new(socketConfig);
 			});
 			services.AddScoped<ConfigureSocketClient>();
 			services.AddScoped<Reactions>();
+			services.AddScoped<SlashCommands>();
+			services.AddScoped<Ready>();
 		}
 
 		internal static void ConfigureWebJobs(IWebJobsBuilder builder)

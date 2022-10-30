@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Papmaskinen.Bot": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

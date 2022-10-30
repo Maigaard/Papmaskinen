@@ -6,6 +6,8 @@
 
 		public ulong BotId { get; set; } = 0;
 
+		public ulong GuildId { get; set; } = 0;
+
 		public Schedule NextEvent { get; set; } = new();
 
 		public class Schedule
