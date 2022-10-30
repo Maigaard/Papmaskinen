@@ -10,6 +10,8 @@
 
 		public Schedule NextEvent { get; set; } = new();
 
+		public Schedule Nominations { get; set; } = new();
+
 		public class Schedule
 		{
 			public ulong ChannelId { get; set; } = 0;
