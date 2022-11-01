@@ -15,7 +15,7 @@ namespace Papmaskinen.Bot.Setup
 	{
 		internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
 		{
-			var configurationUri = new Uri("https://appc-discord-papmaskinen.azconfig.io");
+			var configurationUri = new Uri("https://appcs-papmaskinen.azconfig.io");
 			builder.AddAzureAppConfiguration(options =>
 			{
 				TokenCredential tokenCredential = new DefaultAzureCredential();
