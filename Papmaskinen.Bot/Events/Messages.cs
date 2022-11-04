@@ -27,7 +27,7 @@ namespace Papmaskinen.Bot.Events
 				}
 
 				var match = Regex.Match(message.Content, @"^Game: ([\w ]+)");
-				if (message.Reference.MessageId.IsSpecified && match != null && match.Success)
+				if (message.Reference != null && message.Reference.MessageId.IsSpecified && match != null && match.Success)
 				{
 					IMessage originalMessage = await message.Channel.GetMessageAsync(message.Reference.MessageId.Value);
 					if (originalMessage is IUserMessage userMessage && userMessage.Author.IsBot && userMessage.IsPinned)

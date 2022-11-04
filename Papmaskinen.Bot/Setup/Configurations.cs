@@ -16,15 +16,15 @@ namespace Papmaskinen.Bot.Setup
 	{
 		internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
 		{
-			var configurationUri = new Uri("https://appc-discord-papmaskinen.azconfig.io");
+			var configurationUri = new Uri("https://appcs-papmaskinen.azconfig.io");
+			builder.AddEnvironmentVariables();
 			builder.AddAzureAppConfiguration(options =>
 			{
 				TokenCredential tokenCredential = new DefaultAzureCredential();
 
 				options.Connect(configurationUri, tokenCredential);
-				string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? context.HostingEnvironment.EnvironmentName;
 				options.Select(KeyFilter.Any);
-				options.Select(KeyFilter.Any, envName);
+				options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
 			});
 		}
 
@@ -35,18 +35,19 @@ namespace Papmaskinen.Bot.Setup
 			{
 				DiscordSocketConfig socketConfig = new()
 				{
-					GatewayIntents = GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
+					GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
 				};
 				return new(socketConfig);
 			});
 
 			services.AddBoardGameGeek(options => context.Configuration.Bind("BoardGameGeek", options));
 
-			services.AddScoped<ConfigureSocketClient>();
-			services.AddScoped<Reactions>();
-			services.AddScoped<SlashCommands>();
-			services.AddScoped<Ready>();
-			services.AddScoped<Messages>();
+			services.AddSingleton<Reactions>();
+			services.AddSingleton<SlashCommands>();
+			services.AddSingleton<Ready>();
+			services.AddSingleton<Messages>();
+			
+			services.AddSingleton<ConfigureSocketClient>();
 		}
 
 		internal static void ConfigureWebJobs(IWebJobsBuilder builder)
