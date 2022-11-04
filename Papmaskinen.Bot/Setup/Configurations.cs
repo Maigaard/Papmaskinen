@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Papmaskinen.Bot.Events;
+using Papmaskinen.Integrations.BoardGameGeek;
 
 namespace Papmaskinen.Bot.Setup
 {
@@ -38,10 +39,14 @@ namespace Papmaskinen.Bot.Setup
 				};
 				return new(socketConfig);
 			});
+
+			services.AddBoardGameGeek(options => context.Configuration.Bind("BoardGameGeek", options));
+
 			services.AddScoped<ConfigureSocketClient>();
 			services.AddScoped<Reactions>();
 			services.AddScoped<SlashCommands>();
 			services.AddScoped<Ready>();
+			services.AddScoped<Messages>();
 		}
 
 		internal static void ConfigureWebJobs(IWebJobsBuilder builder)

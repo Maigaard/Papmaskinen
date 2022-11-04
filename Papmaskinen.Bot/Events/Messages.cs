@@ -1,18 +1,28 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Papmaskinen.Bot.Extensions;
+using Papmaskinen.Integrations.BoardGameGeek;
 
 namespace Papmaskinen.Bot.Events
 {
-	internal static class Messages
+	public class Messages
 	{
-		internal static async Task MessageReceived(SocketMessage message)
+		private readonly BoardGameGeekService bggService;
+
+		public Messages(BoardGameGeekService bggService)
+		{
+			this.bggService = bggService;
+		}
+
+		internal async Task MessageReceived(SocketMessage message)
 		{
 			if (message is SocketUserMessage)
 			{
 				if (string.Equals(message.Content, "Hi bot", StringComparison.OrdinalIgnoreCase))
 				{
+					string name = await this.bggService.GetBoardGame(328636);
+					Console.WriteLine(name);
 					await message.Channel.SendMessageAsync($"Hi {message.Author.Username}");
 				}
 
