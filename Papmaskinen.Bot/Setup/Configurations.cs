@@ -18,7 +18,7 @@ namespace Papmaskinen.Bot.Setup
 			var configurationUri = new Uri("https://appcs-papmaskinen.azconfig.io");
 			builder.AddAzureAppConfiguration(options =>
 			{
-				TokenCredential tokenCredential = new DefaultAzureCredential();
+				TokenCredential tokenCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { VisualStudioTenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID") });
 
 				options.Connect(configurationUri, tokenCredential);
 				string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? context.HostingEnvironment.EnvironmentName;
