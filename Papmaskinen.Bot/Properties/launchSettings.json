@@ -3,7 +3,7 @@
     "Papmaskinen.Bot": {
       "commandName": "Project",
         "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Develop",
+            "DOTNET_ENVIRONMENT": "Development",
             "AZURE_TENANT_ID": "5f5a0384-2c29-4760-a52a-d2f31ebe5006"
         }
     }

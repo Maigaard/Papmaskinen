@@ -46,5 +46,10 @@ namespace Papmaskinen.Bot.Setup
 			await this.client.LoginAsync(TokenType.Bot, this.settings.BotToken);
 			await this.client.StartAsync();
 		}
+
+		internal async Task Disconnect()
+		{
+			await this.client.StopAsync();
+		}
 	}
 }

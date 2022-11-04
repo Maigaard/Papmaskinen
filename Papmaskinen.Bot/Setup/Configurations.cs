@@ -16,14 +16,14 @@ namespace Papmaskinen.Bot.Setup
 		internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
 		{
 			var configurationUri = new Uri("https://appcs-papmaskinen.azconfig.io");
+			builder.AddEnvironmentVariables();
 			builder.AddAzureAppConfiguration(options =>
 			{
-				TokenCredential tokenCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { VisualStudioTenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID") });
+				TokenCredential tokenCredential = new DefaultAzureCredential();
 
 				options.Connect(configurationUri, tokenCredential);
-				string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? context.HostingEnvironment.EnvironmentName;
 				options.Select(KeyFilter.Any);
-				options.Select(KeyFilter.Any, envName);
+				options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
 			});
 		}
 
@@ -38,10 +38,11 @@ namespace Papmaskinen.Bot.Setup
 				};
 				return new(socketConfig);
 			});
-			services.AddScoped<ConfigureSocketClient>();
-			services.AddScoped<Reactions>();
-			services.AddScoped<SlashCommands>();
-			services.AddScoped<Ready>();
+			services.AddSingleton<Reactions>();
+			services.AddSingleton<SlashCommands>();
+			services.AddSingleton<Ready>();
+
+			services.AddSingleton<ConfigureSocketClient>();
 		}
 
 		internal static void ConfigureWebJobs(IWebJobsBuilder builder)
