@@ -25,20 +25,21 @@ namespace Papmaskinen.Integrations.BoardGameGeek
             this.client = client;
         }
 
-        public async Task<string> GetBoardGame(int boardGameId)
+        public async Task<Item?> GetBoardGame(int boardGameId)
         {
             NameValueCollection query = HttpUtility.ParseQueryString(string.Empty);
             query.Add("stats", "1");
             query.Add("id", boardGameId.ToString());
 
-            var result = await this.client.GetAsync<ThingResultSet>($"thing&{query}");
-            return result?.Items?.FirstOrDefault()?.Name?.FirstOrDefault(p => p.Type == "primary")?.Value ?? "Fandt ikke noget";
+            var result = await this.client.GetAsync<ThingResultSet>($"thing?{query}");
+
+            return result?.Items?.FirstOrDefault();
         }
     }
 
     public class BoardGameGeekOptions
     {
-        public string Url { get; set; } = "https://boardgamegeek.com/xmlapi2";
+        public string Url { get; set; } = "https://boardgamegeek.com/xmlapi2/";
     }
 
     public static class BoardGameGeekConfiguration
@@ -46,12 +47,13 @@ namespace Papmaskinen.Integrations.BoardGameGeek
         public static void AddBoardGameGeek(this IServiceCollection services, Action<BoardGameGeekOptions> configure)
         {
             services.Configure(configure);
-            services.AddScoped<ISerializer<XmlSettings>, XmlSerializer>();
+            services.AddSingleton<ISerializer<XmlSettings>, XmlSerializer>();
             services.AddHttpClient<BoardGameGeekHttpClient>((provider, client) =>
             {
                 var options = provider.GetRequiredService<IOptionsMonitor<BoardGameGeekOptions>>().CurrentValue;
                 client.BaseAddress = new Uri(options.Url);
             });
+            services.AddSingleton<BoardGameGeekService>();
         }
 
     }
