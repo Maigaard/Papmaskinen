@@ -34,7 +34,7 @@ namespace Papmaskinen.Bot.Setup
 			{
 				DiscordSocketConfig socketConfig = new()
 				{
-					GatewayIntents = GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
+					GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
 				};
 				return new(socketConfig);
 			});
