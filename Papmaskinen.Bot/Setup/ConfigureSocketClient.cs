@@ -11,6 +11,7 @@ namespace Papmaskinen.Bot.Setup
 		private readonly Reactions reactions;
 		private readonly SlashCommands slashCommands;
 		private readonly Ready ready;
+		private readonly SubmittedModals submittedModals;
 		private readonly DiscordSettings settings;
 
 		public ConfigureSocketClient(
@@ -18,12 +19,14 @@ namespace Papmaskinen.Bot.Setup
 			IOptionsMonitor<DiscordSettings> settings,
 			Reactions reactions,
 			SlashCommands slashCommands,
-			Ready ready)
+			Ready ready,
+			SubmittedModals submittedModals)
 		{
 			this.client = client;
 			this.reactions = reactions;
 			this.slashCommands = slashCommands;
 			this.ready = ready;
+			this.submittedModals = submittedModals;
 			this.settings = settings.CurrentValue;
 		}
 
@@ -42,6 +45,7 @@ namespace Papmaskinen.Bot.Setup
 			this.client.ReactionAdded += this.reactions.NominationReactions;
 			this.client.ReactionRemoved += this.reactions.NextEventReactions;
 			this.client.ReactionRemoved += this.reactions.NominationReactions;
+			this.client.ModalSubmitted += this.submittedModals.ModalSubmitted;
 
 			await this.client.LoginAsync(TokenType.Bot, this.settings.BotToken);
 			await this.client.StartAsync();

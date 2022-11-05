@@ -41,7 +41,8 @@ namespace Papmaskinen.Bot.Setup
 			services.AddSingleton<Reactions>();
 			services.AddSingleton<SlashCommands>();
 			services.AddSingleton<Ready>();
-
+			services.AddSingleton<SubmittedModals>();
+			
 			services.AddSingleton<ConfigureSocketClient>();
 		}
 

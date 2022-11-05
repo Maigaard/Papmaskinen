@@ -19,33 +19,19 @@ namespace Papmaskinen.Bot.Events
 		internal async Task InstallCommands()
 		{
 			var guild = this.client.GetGuild(this.settings.GuildId);
-			if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
+			/*if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
 			{
 				Console.WriteLine("Skipping");
 				return;
-			}
+			}*/
+			
+			var deleteTasks = (await guild.GetApplicationCommandsAsync()).Select(ac => ac.DeleteAsync());
+			await Task.WhenAll(deleteTasks);
 
 			var builder = new SlashCommandBuilder();
 			builder.WithName("nominate");
 			builder.WithDescription("Add a new nominations to the nomination channel");
-			builder.AddOptions(
-				new SlashCommandOptionBuilder
-				{
-					Type = ApplicationCommandOptionType.String,
-					Name = "boardgamegeek-link",
-					Description = "Link to the boardgame you wish to nominate",
-					IsRequired = true,
-					IsDefault = false,
-				},
-				new SlashCommandOptionBuilder
-				{
-					Type = ApplicationCommandOptionType.String,
-					Name = "additional-description",
-					Description = "If you have something else to add that isn't in the Boardgamegeek description.",
-					IsRequired = false,
-					IsDefault = false,
-					MaxLength = 100,
-				});
+			
 			await guild.CreateApplicationCommandAsync(builder.Build());
 		}
 	}

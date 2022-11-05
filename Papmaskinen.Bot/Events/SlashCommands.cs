@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Discord;
 using Discord.WebSocket;
 
 namespace Papmaskinen.Bot.Events
@@ -11,7 +7,15 @@ namespace Papmaskinen.Bot.Events
 	{
 		internal async Task NominationCommand(SocketSlashCommand command)
 		{
-			await command.RespondAsync($"You executed {command.Data.Name}");
+			if (command.Data.Name == "nominate")
+			{
+				var modalBuilder = new ModalBuilder()
+					.WithCustomId("nomination-modal")
+					.WithTitle("Nominate new game")
+					.AddTextInput("Board game geek link", "bgg-link");
+				
+				await command.RespondAsync("fck off");
+			}
 		}
 	}
 }
