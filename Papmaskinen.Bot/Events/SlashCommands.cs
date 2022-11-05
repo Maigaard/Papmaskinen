@@ -5,18 +5,28 @@ namespace Papmaskinen.Bot.Events
 {
 	public class SlashCommands
 	{
-		internal async Task NominationCommand(SocketSlashCommand command)
+		internal async Task SlashCommandReceived(SocketSlashCommand command)
 		{
-			if (command.Data.Name == "nominate")
+			switch (command.Data.Name)
 			{
-				var modalBuilder = new ModalBuilder()
-					.WithCustomId("nomination-modal")
-					.WithTitle("Nominate new game")
-					.AddTextInput("Board game geek link", "bgg-link");
-				var modal = modalBuilder.Build();
-				
-				await command.RespondWithModalAsync(modal);
+				case "nominate":
+					await ExecuteNominateCommand(command);
+					break;
+				default:
+					await command.RespondAsync("Unknown command!");
+					break;
 			}
+		}
+
+		private static async Task ExecuteNominateCommand(IDiscordInteraction command)
+		{
+			var modalBuilder = new ModalBuilder()
+				.WithCustomId("nomination-modal")
+				.WithTitle("Nominate new game")
+				.AddTextInput("Board game geek link", "bgg-link");
+			var modal = modalBuilder.Build();
+				
+			await command.RespondWithModalAsync(modal);
 		}
 	}
 }

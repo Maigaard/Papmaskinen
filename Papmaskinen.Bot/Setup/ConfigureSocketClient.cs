@@ -39,7 +39,7 @@ namespace Papmaskinen.Bot.Setup
 			};
 
 			this.client.Ready += this.ready.InstallCommands;
-			this.client.SlashCommandExecuted += this.slashCommands.NominationCommand;
+			this.client.SlashCommandExecuted += this.slashCommands.SlashCommandReceived;
 			this.client.MessageReceived += Messages.MessageReceived;
 			this.client.ReactionAdded += this.reactions.NextEventReactions;
 			this.client.ReactionAdded += this.reactions.NominationReactions;
