@@ -7,15 +7,13 @@ namespace Papmaskinen.Bot.Events
 	{
 		internal async Task SlashCommandReceived(SocketSlashCommand command)
 		{
-			switch (command.Data.Name)
+			var task = command.Data.Name switch
 			{
-				case "nominate":
-					await ExecuteNominateCommand(command);
-					break;
-				default:
-					await command.RespondAsync("Unknown command!");
-					break;
-			}
+				"nominate" => ExecuteNominateCommand(command),
+				_ => command.RespondAsync("Unknown command!")
+			};
+
+			await task;
 		}
 
 		private static async Task ExecuteNominateCommand(IDiscordInteraction command)
