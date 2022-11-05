@@ -13,3 +13,5 @@ var config = host.Services.GetService<ConfigureSocketClient>();
 await config!.Setup();
 
 await host.RunAsync();
+
+await config!.Disconnect();

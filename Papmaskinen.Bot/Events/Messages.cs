@@ -1,13 +1,22 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
 using Papmaskinen.Bot.Extensions;
+using Papmaskinen.Integrations.BoardGameGeek.Models;
+using Papmaskinen.Integrations.BoardGameGeek.Services;
 
 namespace Papmaskinen.Bot.Events
 {
-	internal static class Messages
+	public class Messages
 	{
-		internal static async Task MessageReceived(SocketMessage message)
+		private readonly BoardGameGeekService bggService;
+
+		public Messages(BoardGameGeekService bggService)
+		{
+			this.bggService = bggService;
+		}
+
+		internal async Task MessageReceived(SocketMessage message)
 		{
 			if (message is SocketUserMessage)
 			{
@@ -16,8 +25,24 @@ namespace Papmaskinen.Bot.Events
 					await message.Channel.SendMessageAsync($"Hi {message.Author.Username}");
 				}
 
+				if (message.Content.StartsWith("Game:"))
+				{
+					bool parsed = int.TryParse(message.Content[6..], out int gameId);
+					string gameText = "Couldn't find a game";
+
+					if (parsed && await this.bggService.GetBoardGame(gameId) is Item game)
+					{
+						string? gameName = game.Name?.FirstOrDefault(p => p.Type == "primary")?.Value;
+						string? rating = game.Statistics?.Ratings?.Average?.Value;
+						string? votes = game.Statistics?.Ratings?.Usersrated?.Value;
+						gameText = $"Found a game called {gameName}, with an average rating of {rating} on {votes} votes";
+					}
+
+					await message.Channel.SendMessageAsync(gameText);
+				}
+
 				var match = Regex.Match(message.Content, @"^Game: ([\w ]+)");
-				if (message.Reference.MessageId.IsSpecified && match != null && match.Success)
+				if (message.Reference != null && message.Reference.MessageId.IsSpecified && match != null && match.Success)
 				{
 					IMessage originalMessage = await message.Channel.GetMessageAsync(message.Reference.MessageId.Value);
 					if (originalMessage is IUserMessage userMessage && userMessage.Author.IsBot && userMessage.IsPinned)
