@@ -1,20 +1,18 @@
-/* 
-	Licensed under the Apache License, Version 2.0
-	
-	http://www.apache.org/licenses/LICENSE-2.0
-	*/
-using System;
 using System.Xml.Serialization;
-using System.Collections.Generic;
+
 namespace Papmaskinen.Integrations.BoardGameGeek.Models
 {
 	[XmlRoot(ElementName = "name")]
+#pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable SA1649 // File name should match first type name
 	public class Name
 	{
 		[XmlAttribute(AttributeName = "type")]
 		public string? Type { get; set; }
+
 		[XmlAttribute(AttributeName = "sortindex")]
 		public string? Sortindex { get; set; }
+
 		[XmlAttribute(AttributeName = "value")]
 		public string? Value { get; set; }
 	}
@@ -45,8 +43,10 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlAttribute(AttributeName = "value")]
 		public string? Value { get; set; }
+
 		[XmlAttribute(AttributeName = "numvotes")]
 		public string? Numvotes { get; set; }
+
 		[XmlAttribute(AttributeName = "level")]
 		public string? Level { get; set; }
 	}
@@ -56,6 +56,7 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlElement(ElementName = "result")]
 		public List<Result>? Result { get; set; }
+
 		[XmlAttribute(AttributeName = "numplayers")]
 		public string? Numplayers { get; set; }
 	}
@@ -65,10 +66,13 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlElement(ElementName = "results")]
 		public List<Results>? Results { get; set; }
+
 		[XmlAttribute(AttributeName = "name")]
 		public string? Name { get; set; }
+
 		[XmlAttribute(AttributeName = "title")]
 		public string? Title { get; set; }
+
 		[XmlAttribute(AttributeName = "totalvotes")]
 		public string? Totalvotes { get; set; }
 	}
@@ -106,10 +110,13 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlAttribute(AttributeName = "type")]
 		public string? Type { get; set; }
+
 		[XmlAttribute(AttributeName = "id")]
 		public string? Id { get; set; }
+
 		[XmlAttribute(AttributeName = "value")]
 		public string? Value { get; set; }
+
 		[XmlAttribute(AttributeName = "inbound")]
 		public string? Inbound { get; set; }
 	}
@@ -140,14 +147,19 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlAttribute(AttributeName = "type")]
 		public string? Type { get; set; }
+
 		[XmlAttribute(AttributeName = "id")]
 		public string? Id { get; set; }
+
 		[XmlAttribute(AttributeName = "name")]
 		public string? Name { get; set; }
+
 		[XmlAttribute(AttributeName = "friendlyname")]
 		public string? Friendlyname { get; set; }
+
 		[XmlAttribute(AttributeName = "value")]
 		public string? Value { get; set; }
+
 		[XmlAttribute(AttributeName = "bayesaverage")]
 		public string? Bayesaverage { get; set; }
 	}
@@ -227,28 +239,40 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlElement(ElementName = "usersrated")]
 		public Usersrated? Usersrated { get; set; }
+
 		[XmlElement(ElementName = "average")]
 		public Average? Average { get; set; }
+
 		[XmlElement(ElementName = "bayesaverage")]
 		public Bayesaverage? Bayesaverage { get; set; }
+
 		[XmlElement(ElementName = "ranks")]
 		public Ranks? Ranks { get; set; }
+
 		[XmlElement(ElementName = "stddev")]
 		public Stddev? Stddev { get; set; }
+
 		[XmlElement(ElementName = "median")]
 		public Median? Median { get; set; }
+
 		[XmlElement(ElementName = "owned")]
 		public Owned? Owned { get; set; }
+
 		[XmlElement(ElementName = "trading")]
 		public Trading? Trading { get; set; }
+
 		[XmlElement(ElementName = "wanting")]
 		public Wanting? Wanting { get; set; }
+
 		[XmlElement(ElementName = "wishing")]
 		public Wishing? Wishing { get; set; }
+
 		[XmlElement(ElementName = "numcomments")]
 		public Numcomments? Numcomments { get; set; }
+
 		[XmlElement(ElementName = "numweights")]
 		public Numweights? Numweights { get; set; }
+
 		[XmlElement(ElementName = "averageweight")]
 		public Averageweight? Averageweight { get; set; }
 	}
@@ -258,6 +282,7 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlElement(ElementName = "ratings")]
 		public Ratings? Ratings { get; set; }
+
 		[XmlAttribute(AttributeName = "page")]
 		public string? Page { get; set; }
 	}
@@ -267,34 +292,49 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlElement(ElementName = "thumbnail")]
 		public string? Thumbnail { get; set; }
+
 		[XmlElement(ElementName = "image")]
 		public string? Image { get; set; }
+
 		[XmlElement(ElementName = "name")]
 		public List<Name>? Name { get; set; }
+
 		[XmlElement(ElementName = "description")]
 		public string? Description { get; set; }
+
 		[XmlElement(ElementName = "yearpublished")]
 		public Yearpublished? Yearpublished { get; set; }
+
 		[XmlElement(ElementName = "minplayers")]
 		public Minplayers? Minplayers { get; set; }
+
 		[XmlElement(ElementName = "maxplayers")]
 		public Maxplayers? Maxplayers { get; set; }
+
 		[XmlElement(ElementName = "poll")]
 		public List<Poll>? Poll { get; set; }
+
 		[XmlElement(ElementName = "playingtime")]
 		public Playingtime? Playingtime { get; set; }
+
 		[XmlElement(ElementName = "minplaytime")]
 		public Minplaytime? Minplaytime { get; set; }
+
 		[XmlElement(ElementName = "maxplaytime")]
 		public Maxplaytime? Maxplaytime { get; set; }
+
 		[XmlElement(ElementName = "minage")]
 		public Minage? Minage { get; set; }
+
 		[XmlElement(ElementName = "link")]
 		public List<Link>? Link { get; set; }
+
 		[XmlElement(ElementName = "statistics")]
 		public Statistics? Statistics { get; set; }
+
 		[XmlAttribute(AttributeName = "type")]
 		public string? Type { get; set; }
+
 		[XmlAttribute(AttributeName = "id")]
 		public string? Id { get; set; }
 	}
@@ -304,7 +344,10 @@ namespace Papmaskinen.Integrations.BoardGameGeek.Models
 	{
 		[XmlElement(ElementName = "item")]
 		public List<Item>? Items { get; set; }
+
 		[XmlAttribute(AttributeName = "termsofuse")]
 		public string? Termsofuse { get; set; }
 	}
+#pragma warning restore SA1402 // File may only contain a single type
+#pragma warning restore SA1649 // File name should match first type name
 }
