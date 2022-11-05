@@ -13,8 +13,9 @@ namespace Papmaskinen.Bot.Events
 					.WithCustomId("nomination-modal")
 					.WithTitle("Nominate new game")
 					.AddTextInput("Board game geek link", "bgg-link");
-				
-				await command.RespondAsync("fck off");
+				var modal = modalBuilder.Build();
+				await command.RespondWithModalAsync(modal);
+				await command.RespondAsync("test");
 			}
 		}
 	}
