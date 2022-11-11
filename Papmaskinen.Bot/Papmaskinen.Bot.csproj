@@ -25,4 +25,7 @@
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</None>
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Papmaskinen.Integrations.BoardGameGeek\Papmaskinen.Integrations.BoardGameGeek.csproj" />
+	</ItemGroup>
 </Project>
