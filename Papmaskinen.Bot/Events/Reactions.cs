@@ -87,8 +87,6 @@ Votes:
 					newContent = $"{pinnedMessage.Content}\r\n{nominationTitle} : {nominationVotes}";
 				}
 
-				// Throws "Unknown Channel (MESSAGE_UPDATE)" error, after updating message.
-				// Not sure what that's about. But doesn't prevent event from excuting, as far as i can tell.
 				await pinnedMessage.ModifyAsync(prop => prop.Content = newContent);
 			}
 		}

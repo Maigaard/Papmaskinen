@@ -25,27 +25,13 @@ namespace Papmaskinen.Bot.Events
 				return;
 			}
 
+			var deleteTasks = (await guild.GetApplicationCommandsAsync()).Select(ac => ac.DeleteAsync());
+			await Task.WhenAll(deleteTasks);
+
 			var builder = new SlashCommandBuilder();
 			builder.WithName("nominate");
 			builder.WithDescription("Add a new nominations to the nomination channel");
-			builder.AddOptions(
-				new SlashCommandOptionBuilder
-				{
-					Type = ApplicationCommandOptionType.String,
-					Name = "boardgamegeek-link",
-					Description = "Link to the boardgame you wish to nominate",
-					IsRequired = true,
-					IsDefault = false,
-				},
-				new SlashCommandOptionBuilder
-				{
-					Type = ApplicationCommandOptionType.String,
-					Name = "additional-description",
-					Description = "If you have something else to add that isn't in the Boardgamegeek description.",
-					IsRequired = false,
-					IsDefault = false,
-					MaxLength = 100,
-				});
+
 			await guild.CreateApplicationCommandAsync(builder.Build());
 		}
 	}
