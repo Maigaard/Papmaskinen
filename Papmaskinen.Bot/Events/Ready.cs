@@ -19,19 +19,19 @@ namespace Papmaskinen.Bot.Events
 		internal async Task InstallCommands()
 		{
 			var guild = this.client.GetGuild(this.settings.GuildId);
-			/*if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
+			if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
 			{
 				Console.WriteLine("Skipping");
 				return;
-			}*/
-			
+			}
+
 			var deleteTasks = (await guild.GetApplicationCommandsAsync()).Select(ac => ac.DeleteAsync());
 			await Task.WhenAll(deleteTasks);
 
 			var builder = new SlashCommandBuilder();
 			builder.WithName("nominate");
 			builder.WithDescription("Add a new nominations to the nomination channel");
-			
+
 			await guild.CreateApplicationCommandAsync(builder.Build());
 		}
 	}

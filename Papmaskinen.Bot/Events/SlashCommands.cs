@@ -10,7 +10,7 @@ namespace Papmaskinen.Bot.Events
 			var task = command.Data.Name switch
 			{
 				"nominate" => ExecuteNominateCommand(command),
-				_ => command.RespondAsync("Unknown command!")
+				_ => command.RespondAsync("Unknown command!"),
 			};
 
 			await task;
@@ -23,7 +23,7 @@ namespace Papmaskinen.Bot.Events
 				.WithTitle("Nominate new game")
 				.AddTextInput("Board game geek link", "bgg-link");
 			var modal = modalBuilder.Build();
-				
+
 			await command.RespondWithModalAsync(modal);
 		}
 	}
