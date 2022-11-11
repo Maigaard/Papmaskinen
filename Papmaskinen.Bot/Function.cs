@@ -20,7 +20,13 @@ Attending:
 TBD
 Hopefully:
 TBD
-If not meantioned but you'd still like to attend please confirm to the role call below.
+
+You can use the following reactions to interact wíth this message.
+:thumbsup: \: Attending
+:fingers_crossed: \: Hopefully attending
+:thumbsdown: \: Not attending
+:house: \: I can host
+:game_die: \: I can be Game Master
 @everyone";
 
 		private readonly DiscordSettings settings;
