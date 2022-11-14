@@ -46,7 +46,7 @@ Votes:
 		internal async Task NextEventReactions(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
 		{
 			IUserMessage message = await messageCache.GetOrDownloadAsync();
-			if (channelCache.Id == this.settings.Nominations.ChannelId &&
+			if (channelCache.Id == this.settings.NextEvent.ChannelId &&
 				reaction.UserId != this.settings.BotId &&
 				message.Author.IsBot)
 			{
