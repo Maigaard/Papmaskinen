@@ -18,7 +18,8 @@ namespace Papmaskinen.Integrations.Http.Services.Implementation
 			return new StringContent(stringWriter.ToString(), Encoding.UTF8, "text/xml");
 		}
 
-		protected override TResult? Deserialize<TResult>(string responseText) where TResult : default
+		protected override TResult? Deserialize<TResult>(string responseText)
+			where TResult : default
 		{
 			var serializer = new System.Xml.Serialization.XmlSerializer(typeof(TResult));
 

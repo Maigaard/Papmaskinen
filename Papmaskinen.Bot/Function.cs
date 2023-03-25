@@ -21,7 +21,7 @@ TBD
 Hopefully:
 TBD
 
-You can use the following reactions to interact wíth this message.
+You can use the following reactions to interact with this message.
 :thumbsup: \: Attending
 :fingers_crossed: \: Hopefully attending
 :thumbsdown: \: Not attending

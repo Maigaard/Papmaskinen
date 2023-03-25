@@ -16,16 +16,18 @@ namespace Papmaskinen.Bot.Setup
 	{
 		internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
 		{
-			var configurationUri = new Uri(Environment.GetEnvironmentVariable("APP_CONFIG_STORE"));
-			builder.AddEnvironmentVariables();
-			builder.AddAzureAppConfiguration(options =>
+			if (Environment.GetEnvironmentVariable("APP_CONFIG_STORE") is string appConfigStore)
 			{
-				TokenCredential tokenCredential = new DefaultAzureCredential();
-
-				options.Connect(configurationUri, tokenCredential);
-				options.Select(KeyFilter.Any);
-				options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
-			});
+				var configurationUri = new Uri(appConfigStore);
+				builder.AddEnvironmentVariables();
+				builder.AddAzureAppConfiguration(options =>
+				{
+					TokenCredential tokenCredential = new DefaultAzureCredential();
+					options.Connect(configurationUri, tokenCredential);
+					options.Select(KeyFilter.Any);
+					options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
+				});
+			}
 		}
 
 		internal static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
