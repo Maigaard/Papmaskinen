@@ -16,7 +16,7 @@ namespace Papmaskinen.Bot.Setup
 	{
 		internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
 		{
-			var configurationUri = new Uri("https://appcs-papmaskinen.azconfig.io");
+			var configurationUri = new Uri(Environment.GetEnvironmentVariable("APP_CONFIG_STORE"));
 			builder.AddEnvironmentVariables();
 			builder.AddAzureAppConfiguration(options =>
 			{
