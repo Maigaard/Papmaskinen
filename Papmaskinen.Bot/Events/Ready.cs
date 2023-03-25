@@ -3,36 +3,35 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Setup;
 
-namespace Papmaskinen.Bot.Events
+namespace Papmaskinen.Bot.Events;
+
+public class Ready
 {
-	public class Ready
+	private readonly DiscordSocketClient client;
+	private readonly DiscordSettings settings;
+
+	public Ready(IOptionsMonitor<DiscordSettings> options, DiscordSocketClient client)
 	{
-		private readonly DiscordSocketClient client;
-		private readonly DiscordSettings settings;
+		this.settings = options.CurrentValue;
+		this.client = client;
+	}
 
-		public Ready(IOptionsMonitor<DiscordSettings> options, DiscordSocketClient client)
+	internal async Task InstallCommands()
+	{
+		var guild = this.client.GetGuild(this.settings.GuildId);
+		if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
 		{
-			this.settings = options.CurrentValue;
-			this.client = client;
+			Console.WriteLine("Skipping");
+			return;
 		}
 
-		internal async Task InstallCommands()
-		{
-			var guild = this.client.GetGuild(this.settings.GuildId);
-			if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
-			{
-				Console.WriteLine("Skipping");
-				return;
-			}
+		var deleteTasks = (await guild.GetApplicationCommandsAsync()).Select(ac => ac.DeleteAsync());
+		await Task.WhenAll(deleteTasks);
 
-			var deleteTasks = (await guild.GetApplicationCommandsAsync()).Select(ac => ac.DeleteAsync());
-			await Task.WhenAll(deleteTasks);
+		var builder = new SlashCommandBuilder();
+		builder.WithName("nominate");
+		builder.WithDescription("Add a new nominations to the nomination channel");
 
-			var builder = new SlashCommandBuilder();
-			builder.WithName("nominate");
-			builder.WithDescription("Add a new nominations to the nomination channel");
-
-			await guild.CreateApplicationCommandAsync(builder.Build());
-		}
+		await guild.CreateApplicationCommandAsync(builder.Build());
 	}
 }

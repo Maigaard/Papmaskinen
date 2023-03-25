@@ -10,53 +10,52 @@ using Microsoft.Extensions.Hosting;
 using Papmaskinen.Bot.Events;
 using Papmaskinen.Integrations.BoardGameGeek.Configuration;
 
-namespace Papmaskinen.Bot.Setup
+namespace Papmaskinen.Bot.Setup;
+
+internal static class Configurations
 {
-	internal static class Configurations
+	internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
 	{
-		internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
+		if (Environment.GetEnvironmentVariable("APP_CONFIG_STORE") is string appConfigStore)
 		{
-			if (Environment.GetEnvironmentVariable("APP_CONFIG_STORE") is string appConfigStore)
+			var configurationUri = new Uri(appConfigStore);
+			builder.AddEnvironmentVariables();
+			builder.AddAzureAppConfiguration(options =>
 			{
-				var configurationUri = new Uri(appConfigStore);
-				builder.AddEnvironmentVariables();
-				builder.AddAzureAppConfiguration(options =>
-				{
-					TokenCredential tokenCredential = new DefaultAzureCredential();
-					options.Connect(configurationUri, tokenCredential);
-					options.Select(KeyFilter.Any);
-					options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
-				});
-			}
-		}
-
-		internal static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
-		{
-			services.Configure<DiscordSettings>(options => context.Configuration.Bind("Discord", options));
-			services.AddSingleton<DiscordSocketClient>(options =>
-			{
-				DiscordSocketConfig socketConfig = new()
-				{
-					GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
-				};
-				return new(socketConfig);
+				TokenCredential tokenCredential = new DefaultAzureCredential();
+				options.Connect(configurationUri, tokenCredential);
+				options.Select(KeyFilter.Any);
+				options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
 			});
-
-			services.AddBoardGameGeek(options => context.Configuration.Bind("BoardGameGeek", options));
-
-			services.AddSingleton<Reactions>();
-			services.AddSingleton<SlashCommands>();
-			services.AddSingleton<Ready>();
-			services.AddSingleton<SubmittedModals>();
-			services.AddSingleton<Messages>();
-
-			services.AddSingleton<ConfigureSocketClient>();
 		}
+	}
 
-		internal static void ConfigureWebJobs(IWebJobsBuilder builder)
+	internal static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+	{
+		services.Configure<DiscordSettings>(options => context.Configuration.Bind("Discord", options));
+		services.AddSingleton<DiscordSocketClient>(options =>
 		{
-			builder.AddAzureStorageCoreServices();
-			builder.AddTimers();
-		}
+			DiscordSocketConfig socketConfig = new()
+			{
+				GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
+			};
+			return new(socketConfig);
+		});
+
+		services.AddBoardGameGeek(options => context.Configuration.Bind("BoardGameGeek", options));
+
+		services.AddSingleton<Reactions>();
+		services.AddSingleton<SlashCommands>();
+		services.AddSingleton<Ready>();
+		services.AddSingleton<SubmittedModals>();
+		services.AddSingleton<Messages>();
+
+		services.AddSingleton<ConfigureSocketClient>();
+	}
+
+	internal static void ConfigureWebJobs(IWebJobsBuilder builder)
+	{
+		builder.AddAzureStorageCoreServices();
+		builder.AddTimers();
 	}
 }
