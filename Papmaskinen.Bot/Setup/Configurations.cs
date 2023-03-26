@@ -37,7 +37,14 @@ internal static class Configurations
 		{
 			DiscordSocketConfig socketConfig = new()
 			{
-				GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildEmojis | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.MessageContent,
+				// Bot permissions: 1376738487360
+				GatewayIntents =
+					GatewayIntents.Guilds |
+					GatewayIntents.GuildEmojis |
+					GatewayIntents.GuildMessages |
+					GatewayIntents.GuildMessageReactions |
+					GatewayIntents.MessageContent |
+					GatewayIntents.GuildMembers,
 			};
 			return new(socketConfig);
 		});

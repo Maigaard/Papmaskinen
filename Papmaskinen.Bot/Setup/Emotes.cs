@@ -22,7 +22,7 @@ internal static class Emotes
 	internal static readonly IEmote Clock10 = Emoji.Parse(":clock10:");
 	internal static readonly IEmote Clock11 = Emoji.Parse(":clock11:");
 	internal static readonly IEmote Clock12 = Emoji.Parse(":clock12:");
-	internal static readonly IEnumerable<IEmote> Clocks =
+	internal static readonly IEmote[] Clocks =
 	new IEmote[12]
 	{
 		Clock1, Clock2, Clock3, Clock4, Clock5, Clock6,
