@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Papmaskinen.Bot.Events;
+using Papmaskinen.Bot.HostedServices;
 using Papmaskinen.Integrations.BoardGameGeek.Configuration;
 
 namespace Papmaskinen.Bot.Setup;

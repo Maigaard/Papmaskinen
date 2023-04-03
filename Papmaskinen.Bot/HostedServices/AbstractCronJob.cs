@@ -2,16 +2,16 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Papmaskinen.Bot;
+namespace Papmaskinen.Bot.HostedServices;
 
-public abstract class CronJobHostedService : IHostedService, IDisposable
+public abstract class AbstractCronJob : IHostedService, IDisposable
 {
 	private readonly TimeZoneInfo timeZoneInfo;
-	private readonly ILogger<CronJobHostedService> logger;
+	private readonly ILogger<AbstractCronJob> logger;
 	private readonly CronExpression expression;
 	private Timer? timer = null;
 
-	public CronJobHostedService(ILogger<CronJobHostedService> logger, string expression)
+	public AbstractCronJob(ILogger<AbstractCronJob> logger, string expression)
 	{
 		this.logger = logger;
 		this.expression = CronExpression.Parse(expression);

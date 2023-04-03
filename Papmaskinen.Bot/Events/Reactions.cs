@@ -77,17 +77,15 @@ Votes:
 			int nominationVotes = message.Reactions.Where(r => Emotes.Clocks.Any(c => c.Name == r.Key.Name)).Sum(r => r.Value.ReactionCount);
 
 			var titleRegex = new Regex($@"^({nominationTitle} : )([0-9]{{1,3}})", RegexOptions.Multiline);
-			string newContent = string.Empty;
-			if (titleRegex.IsMatch(pinnedMessage.Content))
-			{
-				newContent = titleRegex.Replace(pinnedMessage.Content, $"{nominationTitle} : {nominationVotes}");
-			}
-			else
-			{
-				newContent = $"{pinnedMessage.Content}\r\n{nominationTitle} : {nominationVotes}";
-			}
+			string newContent = titleRegex.IsMatch(pinnedMessage.Content)
+				? titleRegex.Replace(pinnedMessage.Content, $"{nominationTitle} : {nominationVotes}")
+				: $"{pinnedMessage.Content}\r\n{nominationTitle} : {nominationVotes}";
 
 			await pinnedMessage.ModifyAsync(prop => prop.Content = newContent);
+			if (message.Author is SocketGuildUser user)
+			{
+				await user.UpdateNickName();
+			}
 		}
 	}
 
@@ -103,7 +101,7 @@ Votes:
 	private static async Task<string> GetUserNames(IUserMessage message, IEmote emote)
 	{
 		var users = await message.GetReactionUsersAsync(emote, 20).FlattenAsync();
-		var userNames = users.Where(u => !u.IsBot).Select(u => u is IGuildUser user ? user.Nickname : u.Username);
+		var userNames = users.Where(u => !u.IsBot).Select(u => u is IGuildUser user ? user.DisplayName : u.Username);
 		return userNames.Any() ? string.Join(", ", userNames) : "TBD";
 	}
 }
