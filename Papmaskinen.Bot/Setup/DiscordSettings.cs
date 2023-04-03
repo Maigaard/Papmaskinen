@@ -8,12 +8,14 @@ public class DiscordSettings
 
 	public ulong GuildId { get; set; } = 0;
 
-	public Schedule NextEvent { get; set; } = new();
+	public CronSchedule NextEvent { get; set; } = new();
 
-	public Schedule Nominations { get; set; } = new();
+	public CronSchedule Nominations { get; set; } = new();
 
-	public class Schedule
+	public class CronSchedule
 	{
 		public ulong ChannelId { get; set; } = 0;
+
+		public string Schedule { get; set; } = null!;
 	}
 }

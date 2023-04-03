@@ -4,7 +4,6 @@ using Papmaskinen.Bot.Setup;
 
 IHost host = Host.CreateDefaultBuilder(args)
 		.ConfigureServices(Configurations.ConfigureServices)
-		.ConfigureWebJobs(Configurations.ConfigureWebJobs)
 		.Build();
 
 var config = host.Services.GetService<ConfigureSocketClient>();

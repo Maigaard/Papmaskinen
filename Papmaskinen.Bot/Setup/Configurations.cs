@@ -58,11 +58,6 @@ internal static class Configurations
 		services.AddSingleton<Messages>();
 
 		services.AddSingleton<ConfigureSocketClient>();
-	}
-
-	internal static void ConfigureWebJobs(IWebJobsBuilder builder)
-	{
-		builder.AddAzureStorageCoreServices();
-		builder.AddTimers();
+		services.AddHostedService<NextEvent>();
 	}
 }

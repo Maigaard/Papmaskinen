@@ -1,13 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot;
 
-public class Function
+public class NextEvent : CronJobHostedService
 {
 	private const string ScheduledMessage = @"
 - Next scheduled meet up: {0}
@@ -30,20 +29,20 @@ You can use the following reactions to interact with this message.
 :game_die: \: I can be Game Master
 @everyone";
 
+	private readonly ILogger<NextEvent> logger;
 	private readonly DiscordSettings settings;
 	private readonly DiscordSocketClient client;
 
-	public Function(IOptionsMonitor<DiscordSettings> settings, DiscordSocketClient client)
+	public NextEvent(ILogger<NextEvent> logger, IOptionsMonitor<DiscordSettings> settings, DiscordSocketClient client)
+		: base(logger, settings.CurrentValue.NextEvent.Schedule)
 	{
+		this.logger = logger;
 		this.settings = settings.CurrentValue;
 		this.client = client;
 	}
 
-	[FunctionName(nameof(CronFunction))]
-	public async Task CronFunction([TimerTrigger("%Discord:NextEvent:Schedule%", RunOnStartup = false)] TimerInfo timer, ILogger logger)
+	protected override async Task DoWork(object? state)
 	{
-		Console.WriteLine(timer.Schedule.GetNextOccurrence(DateTime.Now).ToString());
-		logger.LogInformation(timer.Schedule.GetNextOccurrence(DateTime.Now).ToString());
 		var channel = await this.client.GetChannelAsync(this.settings.NextEvent.ChannelId);
 		if (channel is ITextChannel ch)
 		{
@@ -81,6 +80,7 @@ You can use the following reactions to interact with this message.
 		var guild = this.client.Guilds.First();
 		foreach (var user in guild.Users)
 		{
+			this.logger.LogInformation("Attempting to nickname {DisplayName}", user.DisplayName);
 			if (user.Id != guild.OwnerId)
 			{
 				string nickname = $"{user.DisplayName}{Emotes.Clocks[currentMonth]}";
