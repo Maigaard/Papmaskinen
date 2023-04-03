@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Events;
 
@@ -7,6 +8,7 @@ namespace Papmaskinen.Bot.Setup;
 
 public class ConfigureSocketClient
 {
+	private readonly ILogger<ConfigureSocketClient> logger;
 	private readonly DiscordSocketClient client;
 	private readonly Reactions reactions;
 	private readonly SlashCommands slashCommands;
@@ -16,6 +18,7 @@ public class ConfigureSocketClient
 	private readonly DiscordSettings settings;
 
 	public ConfigureSocketClient(
+		ILogger<ConfigureSocketClient> logger,
 		DiscordSocketClient client,
 		IOptionsMonitor<DiscordSettings> settings,
 		Reactions reactions,
@@ -24,6 +27,7 @@ public class ConfigureSocketClient
 		SubmittedModals submittedModals,
 		Messages messages)
 	{
+		this.logger = logger;
 		this.client = client;
 		this.reactions = reactions;
 		this.slashCommands = slashCommands;
@@ -37,7 +41,7 @@ public class ConfigureSocketClient
 	{
 		this.client.Log += (LogMessage msg) =>
 		{
-			Console.WriteLine(msg.ToString());
+			this.logger.LogInformation("{message}", msg);
 			return Task.CompletedTask;
 		};
 

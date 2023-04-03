@@ -2,7 +2,6 @@
 using Azure.Identity;
 using Discord;
 using Discord.WebSocket;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;

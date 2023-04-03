@@ -4,16 +4,14 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<UserSecretsId>a4a4028f-9a2a-49d7-84af-dd10b2a3abd7</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.8.2" />
 		<PackageReference Include="Cronos" Version="0.7.1" />
-		<PackageReference Include="Discord.Net" Version="3.9.0" />
-		<PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.36" />
-		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="4.0.1" />
-		<PackageReference Include="Microsoft.Azure.WebJobs.Host.Storage" Version="4.1.0" />
+		<PackageReference Include="Discord.Net" Version="3.10.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="5.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="6.0.0" />
 		<PackageReference Include="SmartFormat" Version="3.2.1" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
 			<PrivateAssets>all</PrivateAssets>

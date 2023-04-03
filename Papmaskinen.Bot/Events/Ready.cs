@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Setup;
 
@@ -7,12 +8,14 @@ namespace Papmaskinen.Bot.Events;
 
 public class Ready
 {
+	private readonly ILogger<Ready> logger;
 	private readonly DiscordSocketClient client;
 	private readonly DiscordSettings settings;
 
-	public Ready(IOptionsMonitor<DiscordSettings> options, DiscordSocketClient client)
+	public Ready(ILogger<Ready> logger, IOptionsMonitor<DiscordSettings> options, DiscordSocketClient client)
 	{
 		this.settings = options.CurrentValue;
+		this.logger = logger;
 		this.client = client;
 	}
 
@@ -21,7 +24,7 @@ public class Ready
 		var guild = this.client.GetGuild(this.settings.GuildId);
 		if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
 		{
-			Console.WriteLine("Skipping");
+			this.logger.LogInformation("Commands already installed.");
 			return;
 		}
 
