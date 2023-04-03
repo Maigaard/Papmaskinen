@@ -1,22 +1,17 @@
-﻿using Discord;
+﻿using System.Reflection;
+using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
+using Papmaskinen.Bot.Models.Attributes;
 
 namespace Papmaskinen.Bot.Events;
 
 public class SlashCommands
 {
-	internal async Task SlashCommandReceived(SocketSlashCommand command)
-	{
-		var task = command.Data.Name switch
-		{
-			"nominate" => ExecuteNominateCommand(command),
-			_ => command.RespondAsync("Unknown command!"),
-		};
+	private const string NominateCommandName = "nominate";
 
-		await task;
-	}
-
-	private static async Task ExecuteNominateCommand(IDiscordInteraction command)
+	[CommandInfo(NominateCommandName, "Add a new game nomination to the nomination channel.")]
+	public static async Task ExecuteNominateCommand(IDiscordInteraction command)
 	{
 		var modalBuilder = new ModalBuilder()
 			.WithCustomId("nomination-modal")
@@ -25,5 +20,16 @@ public class SlashCommands
 		var modal = modalBuilder.Build();
 
 		await command.RespondWithModalAsync(modal);
+	}
+
+	internal async Task SlashCommandReceived(SocketSlashCommand command)
+	{
+		var task = command.Data.Name switch
+		{
+			NominateCommandName => ExecuteNominateCommand(command),
+			_ => command.RespondAsync("Unknown command!"),
+		};
+
+		await task;
 	}
 }

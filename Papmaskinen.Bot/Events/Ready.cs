@@ -1,7 +1,8 @@
-﻿using Discord;
+﻿using System.Reflection;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Papmaskinen.Bot.Models.Attributes;
 using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot.Events;
@@ -22,19 +23,30 @@ public class Ready
 	internal async Task InstallCommands()
 	{
 		var guild = this.client.GetGuild(this.settings.GuildId);
-		if (guild == null || (await guild.GetApplicationCommandsAsync()).Any(ac => ac.Name == "nominate"))
+		if (guild is null)
+		{
+			this.logger.LogWarning("Couldn't find guild.");
+			return;
+		}
+
+		IEnumerable<CommandInfoAttribute> botCommands = GetCommands();
+		IReadOnlyCollection<SocketApplicationCommand> applicationCommands = await guild.GetApplicationCommandsAsync();
+		if (botCommands.ExceptBy(applicationCommands.Select(bc => bc.Name), ac => ac.CommandName).Any())
 		{
 			this.logger.LogInformation("Commands already installed.");
 			return;
 		}
 
-		var deleteTasks = (await guild.GetApplicationCommandsAsync()).Select(ac => ac.DeleteAsync());
+		var deleteTasks = applicationCommands.Select(ac => ac.DeleteAsync());
 		await Task.WhenAll(deleteTasks);
+		await Task.WhenAll(botCommands.Select(ci => guild.CreateApplicationCommandAsync(ci.BuildProperties())));
+	}
 
-		var builder = new SlashCommandBuilder();
-		builder.WithName("nominate");
-		builder.WithDescription("Add a new nominations to the nomination channel");
-
-		await guild.CreateApplicationCommandAsync(builder.Build());
+	private static IEnumerable<CommandInfoAttribute> GetCommands()
+	{
+		return typeof(SlashCommands)
+			.GetMethods()
+			.Select(m => m.GetCustomAttribute<CommandInfoAttribute>())
+			.Where(m => m is not null)!;
 	}
 }
