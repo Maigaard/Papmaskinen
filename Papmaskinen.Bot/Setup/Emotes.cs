@@ -9,6 +9,7 @@ internal static class Emotes
 	internal static readonly IEmote FingersCrossed = Emoji.Parse(":fingers_crossed:");
 	internal static readonly IEmote House = Emoji.Parse(":house:");
 	internal static readonly IEmote GameDie = Emoji.Parse(":game_die:");
+	internal static readonly IEmote RedX = Emoji.Parse(":x:");
 
 	internal static readonly IEmote Clock1 = Emoji.Parse(":clock1:");
 	internal static readonly IEmote Clock2 = Emoji.Parse(":clock2:");

@@ -7,7 +7,7 @@ using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot.Events;
 
-public class Reactions
+public partial class Reactions
 {
 	private const string NominationPinnedMessage = @"
 This place is for nominating and voting on games for future PapClub events.
@@ -48,7 +48,7 @@ Votes:
 		IUserMessage message = await messageCache.GetOrDownloadAsync();
 		if (channelCache.Id == this.settings.NextEvent.ChannelId &&
 			reaction.UserId != this.settings.BotId &&
-			message.Author.IsBot)
+			message?.Author?.IsBot == true)
 		{
 			await ReactToEmote(reaction, message!, Emotes.ThumbsUp, "Attending");
 			await ReactToEmote(reaction, message!, Emotes.FingersCrossed, "Hopefully");
@@ -65,28 +65,68 @@ Votes:
 		{
 			IUserMessage message = await messageCache.GetOrDownloadAsync();
 			IMessageChannel channel = await channelCache.GetOrDownloadAsync();
-			var pinnedMessages = await channel.GetPinnedMessagesAsync();
 
-			if (pinnedMessages.FirstOrDefault() is not IUserMessage pinnedMessage)
-			{
-				pinnedMessage = await channel.SendMessageAsync(NominationPinnedMessage);
-				await pinnedMessage.PinAsync();
-			}
+			int nominationVotes = message.Reactions
+				.Where(r => Emotes.Clocks.Any(c => c.Name == r.Key.Name))
+				.Sum(r => r.Value.ReactionCount);
+			await UpdateNominationVotes(message.Content, nominationVotes, channel);
 
-			string nominationTitle = Regex.Match(message.Content, @"^([\w:\- ]+)[\r\n]*").Value;
-			int nominationVotes = message.Reactions.Where(r => Emotes.Clocks.Any(c => c.Name == r.Key.Name)).Sum(r => r.Value.ReactionCount);
-
-			var titleRegex = new Regex($@"^({nominationTitle} : )([0-9]{{1,3}})", RegexOptions.Multiline);
-			string newContent = titleRegex.IsMatch(pinnedMessage.Content)
-				? titleRegex.Replace(pinnedMessage.Content, $"{nominationTitle} : {nominationVotes}")
-				: $"{pinnedMessage.Content}\r\n{nominationTitle} : {nominationVotes}";
-
-			await pinnedMessage.ModifyAsync(prop => prop.Content = newContent);
 			if (message.Author is SocketGuildUser user)
 			{
 				await user.UpdateNickName();
 			}
 		}
+	}
+
+	internal async Task RemoveBotPostReaction(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
+	{
+		if (channelCache.Id == this.settings.Nominations.ChannelId &&
+			reaction.UserId != this.settings.BotId &&
+			reaction.Emote.Name == Emotes.RedX.Name)
+		{
+			IUserMessage message = await messageCache.GetOrDownloadAsync();
+			if (message.Interaction.User.Id == reaction.UserId)
+			{
+				IMessageChannel channel = await channelCache.GetOrDownloadAsync();
+				await UpdateNominationVotes(message.Content, -1, channel);
+				await message.DeleteAsync();
+			}
+		}
+	}
+
+	private static async Task UpdateNominationVotes(string nominationContent, int nominationVotes, IMessageChannel channel)
+	{
+		IUserMessage pinnedMessage = await GetPinnedMessage(channel);
+		string nominationTitle = NominationTitle().Match(nominationContent).Value.TrimEnd();
+
+		var titleRegex = new Regex($@"^({nominationTitle} : )([0-9]{{1,3}})", RegexOptions.Multiline);
+		string nominationReplacement = nominationVotes >= 0
+			? $"{nominationTitle} : {nominationVotes}"
+			: string.Empty;
+
+		if (titleRegex.IsMatch(pinnedMessage.Content))
+		{
+			await pinnedMessage.ModifyAsync(prop =>
+				prop.Content = titleRegex.Replace(pinnedMessage.Content, nominationReplacement));
+		}
+		else if (!string.IsNullOrEmpty(nominationReplacement))
+		{
+			await pinnedMessage.ModifyAsync(prop =>
+				prop.Content = $"{pinnedMessage.Content}\r\n{nominationReplacement}");
+		}
+	}
+
+	private static async Task<IUserMessage> GetPinnedMessage(IMessageChannel channel)
+	{
+		var pinnedMessages = await channel.GetPinnedMessagesAsync();
+
+		if (pinnedMessages.FirstOrDefault() is not IUserMessage pinnedMessage)
+		{
+			pinnedMessage = await channel.SendMessageAsync(NominationPinnedMessage);
+			await pinnedMessage.PinAsync();
+		}
+
+		return pinnedMessage;
 	}
 
 	private static async Task ReactToEmote(SocketReaction reaction, IUserMessage message, IEmote emote, string messagePrefix)
@@ -104,4 +144,7 @@ Votes:
 		var userNames = users.Where(u => !u.IsBot).Select(u => u is IGuildUser user ? user.DisplayName : u.Username);
 		return userNames.Any() ? string.Join(", ", userNames) : "TBD";
 	}
+
+	[GeneratedRegex("^([\\w]+[\\w:\\- ]*)")]
+	private static partial Regex NominationTitle();
 }

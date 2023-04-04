@@ -48,6 +48,7 @@ public class ConfigureSocketClient
 		this.client.Ready += this.ready.InstallCommands;
 		this.client.SlashCommandExecuted += this.slashCommands.SlashCommandReceived;
 		this.client.MessageReceived += this.messages.MessageReceived;
+		this.client.ReactionAdded += this.reactions.RemoveBotPostReaction;
 		this.client.ReactionAdded += this.reactions.NextEventReactions;
 		this.client.ReactionAdded += this.reactions.NominationReactions;
 		this.client.ReactionRemoved += this.reactions.NextEventReactions;
