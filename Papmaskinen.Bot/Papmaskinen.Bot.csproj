@@ -4,29 +4,37 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<UserSecretsId>a4a4028f-9a2a-49d7-84af-dd10b2a3abd7</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Azure.Identity" Version="1.6.0" />
-		<PackageReference Include="Discord.Net" Version="3.8.1" />
-		<PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.33" />
-		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="4.0.1" />
-		<PackageReference Include="Microsoft.Azure.WebJobs.Host.Storage" Version="4.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="5.1.0" />
-		<PackageReference Include="SmartFormat" Version="3.2.0" />
+		<PackageReference Include="Azure.Identity" Version="1.8.2" />
+		<PackageReference Include="Cronos" Version="0.7.1" />
+		<PackageReference Include="Discord.Net" Version="3.10.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="6.0.0" />
+		<PackageReference Include="SmartFormat" Version="3.2.1" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-		<None Update="appsettings.json">
+		<ContentWithTargetPath  Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" Include="appsettings.Production.json">
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
-		</None>
+			<TargetPath>appsettings.json</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" Include="appsettings.Production.json">
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>appsettings.json</TargetPath>
+		</ContentWithTargetPath>
+		<None Include="appsettings.Production.json"></None>
+		<None Include="appsettings.Development.json"></None>
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Papmaskinen.Integrations.BoardGameGeek\Papmaskinen.Integrations.BoardGameGeek.csproj" />
+		<ProjectReference Include="..\Papmaskinen.Integrations.BoardGameGeek\Papmaskinen.Integrations.BoardGameGeek.csproj" />
 	</ItemGroup>
 </Project>

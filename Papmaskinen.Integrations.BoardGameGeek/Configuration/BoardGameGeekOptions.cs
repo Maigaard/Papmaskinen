@@ -1,7 +1,6 @@
-﻿namespace Papmaskinen.Integrations.BoardGameGeek.Configuration
+﻿namespace Papmaskinen.Integrations.BoardGameGeek.Configuration;
+
+public class BoardGameGeekOptions
 {
-	public class BoardGameGeekOptions
-	{
-		public string Url { get; set; } = "https://boardgamegeek.com/xmlapi2/";
-	}
+	public string Url { get; set; } = "https://boardgamegeek.com/xmlapi2/";
 }

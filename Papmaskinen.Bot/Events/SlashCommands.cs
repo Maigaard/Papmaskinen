@@ -1,30 +1,34 @@
 ﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
+using Papmaskinen.Bot.Models.Attributes;
 
-namespace Papmaskinen.Bot.Events
+namespace Papmaskinen.Bot.Events;
+
+internal static class SlashCommands
 {
-	public class SlashCommands
+	private const string NominateCommandName = "nominate";
+
+	[CommandInfo(NominateCommandName, "Add a new game nomination to the nomination channel.")]
+	public static async Task ExecuteNominateCommand(IDiscordInteraction command)
 	{
-		internal async Task SlashCommandReceived(SocketSlashCommand command)
+		var modalBuilder = new ModalBuilder()
+			.WithCustomId("nomination-modal")
+			.WithTitle("Nominate new game")
+			.AddTextInput("Board game geek link", "bgg-link");
+		var modal = modalBuilder.Build();
+
+		await command.RespondWithModalAsync(modal);
+	}
+
+	internal static async Task SlashCommandReceived(SocketSlashCommand command)
+	{
+		var task = command.Data.Name switch
 		{
-			var task = command.Data.Name switch
-			{
-				"nominate" => ExecuteNominateCommand(command),
-				_ => command.RespondAsync("Unknown command!"),
-			};
+			NominateCommandName => ExecuteNominateCommand(command),
+			_ => command.RespondAsync("Unknown command!"),
+		};
 
-			await task;
-		}
-
-		private static async Task ExecuteNominateCommand(IDiscordInteraction command)
-		{
-			var modalBuilder = new ModalBuilder()
-				.WithCustomId("nomination-modal")
-				.WithTitle("Nominate new game")
-				.AddTextInput("Board game geek link", "bgg-link");
-			var modal = modalBuilder.Build();
-
-			await command.RespondWithModalAsync(modal);
-		}
+		await task;
 	}
 }
