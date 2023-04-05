@@ -21,14 +21,18 @@
 	</ItemGroup>
 	<ItemGroup>
 		<AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-		<None Update="appsettings.Production.json">
+		<ContentWithTargetPath  Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" Include="appsettings.Production.json">
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
-		</None>
-		<None Update="appsettings.Development.json">
+			<TargetPath>appsettings.json</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" Include="appsettings.Production.json">
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
-		</None>
+			<TargetPath>appsettings.json</TargetPath>
+		</ContentWithTargetPath>
+		<None Include="appsettings.Production.json"></None>
+		<None Include="appsettings.Development.json"></None>
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Papmaskinen.Integrations.BoardGameGeek\Papmaskinen.Integrations.BoardGameGeek.csproj" />

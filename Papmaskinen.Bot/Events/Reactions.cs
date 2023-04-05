@@ -45,7 +45,7 @@ public partial class Reactions
 				.Sum(r => r.Value.ReactionCount);
 			await UpdateNominationVotes(message.Content, nominationVotes, channel);
 
-			if (message.Author is SocketGuildUser user)
+			if (reaction.User.Value is SocketGuildUser user)
 			{
 				await user.UpdateNickName();
 			}
