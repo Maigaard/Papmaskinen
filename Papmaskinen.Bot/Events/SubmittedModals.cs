@@ -1,5 +1,6 @@
 ﻿using Discord.WebSocket;
 using Papmaskinen.Bot.Models;
+using Papmaskinen.Bot.Models.Constants;
 using Papmaskinen.Integrations.BoardGameGeek.Services;
 using SmartFormat;
 
@@ -7,17 +8,6 @@ namespace Papmaskinen.Bot.Events;
 
 public class SubmittedModals
 {
-	private const string NominationTemplate = @"
-{Name} ({Rating:N1} BGG rating)
-{Link}
-
-{Players} players
-
-Mechanics:
-{Mechanics:list: - {}|\n}
-
-{Description}";
-
 	private readonly BoardGameGeekService bggService;
 
 	public SubmittedModals(BoardGameGeekService bggService)
@@ -28,7 +18,7 @@ Mechanics:
 	public async Task ModalSubmitted(SocketModal modal)
 	{
 		var bggLinkComponent = modal.Data.Components.Single(x => x.CustomId == "bgg-link");
-		if (!this.TryGetGameId(bggLinkComponent.Value, out int gameId))
+		if (!TryGetGameId(bggLinkComponent.Value, out int gameId))
 		{
 			await modal.RespondAsync($"{bggLinkComponent.Value} is an invalid BoardGameGeek Url", ephemeral: true);
 			return;
@@ -42,11 +32,11 @@ Mechanics:
 		}
 
 		var nomination = new Nomination(game, bggLinkComponent.Value);
-		string content = Smart.Format(NominationTemplate, nomination);
+		string content = Smart.Format(MessageTemplates.NewNominationTemplate, nomination);
 		await modal.RespondAsync(content);
 	}
 
-	public bool TryGetGameId(string gameUrl, out int gameId)
+	private static bool TryGetGameId(string gameUrl, out int gameId)
 	{
 		try
 		{

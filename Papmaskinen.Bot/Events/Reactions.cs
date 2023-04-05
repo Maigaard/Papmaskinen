@@ -3,39 +3,13 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Options;
 using Papmaskinen.Bot.Extensions;
+using Papmaskinen.Bot.Models.Constants;
 using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot.Events;
 
 public partial class Reactions
 {
-	private const string NominationPinnedMessage = @"
-This place is for nominating and voting on games for future PapClub events.
-
-Procedure: To nominate a game use command 'nominate', and add a boardgamegeek link to your game. 
-
-Every month each member has one vote, to be used on any of the nominations.
-A week before an event the highest voted nomination is chosen as the primary game.
-
-Voting Emoji: (\:clockX\: where X is the current month)
-January: 🕐
-February: 🕑
-March: 🕒
-April: 🕓
-May: 🕔 
-June: 🕕 
-July: 🕖 
-August: 🕗
-September: 🕘
-October: 🕙
-November: 🕚
-December: 🕛
-
-Have fun! 😁 🎫
-
-Votes:
-";
-
 	private readonly DiscordSettings settings;
 
 	public Reactions(IOptionsMonitor<DiscordSettings> options)
@@ -122,7 +96,7 @@ Votes:
 
 		if (pinnedMessages.FirstOrDefault() is not IUserMessage pinnedMessage)
 		{
-			pinnedMessage = await channel.SendMessageAsync(NominationPinnedMessage);
+			pinnedMessage = await channel.SendMessageAsync(MessageTemplates.NominationPinnedMessage);
 			await pinnedMessage.PinAsync();
 		}
 

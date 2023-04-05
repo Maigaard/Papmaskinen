@@ -11,7 +11,6 @@ public class ConfigureSocketClient
 	private readonly ILogger<ConfigureSocketClient> logger;
 	private readonly DiscordSocketClient client;
 	private readonly Reactions reactions;
-	private readonly SlashCommands slashCommands;
 	private readonly Ready ready;
 	private readonly SubmittedModals submittedModals;
 	private readonly Messages messages;
@@ -22,7 +21,6 @@ public class ConfigureSocketClient
 		DiscordSocketClient client,
 		IOptionsMonitor<DiscordSettings> settings,
 		Reactions reactions,
-		SlashCommands slashCommands,
 		Ready ready,
 		SubmittedModals submittedModals,
 		Messages messages)
@@ -30,7 +28,6 @@ public class ConfigureSocketClient
 		this.logger = logger;
 		this.client = client;
 		this.reactions = reactions;
-		this.slashCommands = slashCommands;
 		this.ready = ready;
 		this.submittedModals = submittedModals;
 		this.messages = messages;
@@ -46,7 +43,7 @@ public class ConfigureSocketClient
 		};
 
 		this.client.Ready += this.ready.InstallCommands;
-		this.client.SlashCommandExecuted += this.slashCommands.SlashCommandReceived;
+		this.client.SlashCommandExecuted += SlashCommands.SlashCommandReceived;
 		this.client.MessageReceived += this.messages.MessageReceived;
 		this.client.ReactionAdded += this.reactions.RemoveBotPostReaction;
 		this.client.ReactionAdded += this.reactions.NextEventReactions;

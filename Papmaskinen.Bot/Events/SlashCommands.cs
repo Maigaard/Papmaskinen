@@ -1,12 +1,11 @@
-﻿using System.Reflection;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Papmaskinen.Bot.Models.Attributes;
 
 namespace Papmaskinen.Bot.Events;
 
-public class SlashCommands
+internal static class SlashCommands
 {
 	private const string NominateCommandName = "nominate";
 
@@ -22,7 +21,7 @@ public class SlashCommands
 		await command.RespondWithModalAsync(modal);
 	}
 
-	internal async Task SlashCommandReceived(SocketSlashCommand command)
+	internal static async Task SlashCommandReceived(SocketSlashCommand command)
 	{
 		var task = command.Data.Name switch
 		{

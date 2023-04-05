@@ -6,7 +6,6 @@ namespace Papmaskinen.Bot.HostedServices;
 
 public abstract class AbstractCronJob : IHostedService, IDisposable
 {
-	private readonly TimeZoneInfo timeZoneInfo;
 	private readonly ILogger<AbstractCronJob> logger;
 	private readonly CronExpression expression;
 	private Timer? timer = null;
@@ -15,15 +14,17 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 	{
 		this.logger = logger;
 		this.expression = CronExpression.Parse(expression);
-		this.timeZoneInfo = TimeZoneInfo.Local;
+		this.TimeZoneInfo = TimeZoneInfo.Local;
 	}
 
-	public Task StartAsync(CancellationToken stoppingToken)
+	protected TimeZoneInfo TimeZoneInfo { get; }
+
+	public Task StartAsync(CancellationToken cancellationToken)
 	{
-		return this.ScheduleJob(stoppingToken);
+		return this.ScheduleJob(cancellationToken);
 	}
 
-	public Task StopAsync(CancellationToken stoppingToken)
+	public Task StopAsync(CancellationToken cancellationToken)
 	{
 		this.logger.LogInformation("Timed Hosted Service is stopping.");
 
@@ -34,19 +35,25 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 
 	public void Dispose()
 	{
+		this.Dispose(true);
+
 		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
 		this.timer?.Dispose();
 	}
 
-	protected virtual Task DoWork(object? state)
+	protected virtual Task DoWork(CancellationToken cancellationToken)
 	{
 		this.logger.LogInformation("No job has been initiated");
 		return Task.CompletedTask;
 	}
 
-	private async Task ScheduleJob(CancellationToken stoppingToken)
+	private async Task ScheduleJob(CancellationToken cancellationToken)
 	{
-		var next = this.expression.GetNextOccurrence(DateTimeOffset.Now, this.timeZoneInfo);
+		var next = this.expression.GetNextOccurrence(DateTimeOffset.Now, this.TimeZoneInfo);
 		if (next.HasValue)
 		{
 			string date = next.Value.ToLocalTime().ToString("f");
@@ -54,7 +61,7 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 			var delay = next.Value - DateTimeOffset.Now;
 			if (delay.TotalMilliseconds <= 0)
 			{
-				await this.ScheduleJob(stoppingToken);
+				await this.ScheduleJob(cancellationToken);
 			}
 
 			this.timer = new Timer(
@@ -63,17 +70,15 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 					this.timer?.Dispose();
 					this.timer = null;
 
-					if (!stoppingToken.IsCancellationRequested)
+					if (!cancellationToken.IsCancellationRequested)
 					{
-						await this.DoWork(stoppingToken);
-						await this.ScheduleJob(stoppingToken);
+						await this.DoWork(cancellationToken);
+						await this.ScheduleJob(cancellationToken);
 					}
 				},
 				null,
 				(uint)delay.TotalMilliseconds,
 				Timeout.Infinite);
 		}
-
-		await Task.CompletedTask;
 	}
 }

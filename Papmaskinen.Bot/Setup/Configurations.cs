@@ -52,7 +52,6 @@ internal static class Configurations
 		services.AddBoardGameGeek(options => context.Configuration.Bind("BoardGameGeek", options));
 
 		services.AddSingleton<Reactions>();
-		services.AddSingleton<SlashCommands>();
 		services.AddSingleton<Ready>();
 		services.AddSingleton<SubmittedModals>();
 		services.AddSingleton<Messages>();
