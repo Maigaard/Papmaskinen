@@ -24,28 +24,19 @@ You can use the following reactions to interact with this message.
 @everyone";
 
 	internal const string NominationPinnedMessage = @"
-This place is for nominating and voting on games for future PapClub events.
-
-Procedure: To nominate a game use command 'nominate', and add a boardgamegeek link to your game. 
-
-Every month each member has one vote, to be used on any of the nominations.
-A week before an event the highest voted nomination is chosen as the primary game.
-
-Voting Emoji: (\:clockX\: where X is the current month)
-January: 🕐
-February: 🕑
-March: 🕒
-April: 🕓
-May: 🕔 
-June: 🕕 
-July: 🕖 
-August: 🕗
-September: 🕘
-October: 🕙
-November: 🕚
-December: 🕛
-
-Have fun! 😁 🎫
+Voting Emojis: (\:clockX\: where X is the current month)
+January: :clock1:
+February: :clock2:
+March: :clock3:
+April: :clock4:
+May: :clock5: 
+June: :clock6: 
+July: :clock7: 
+August: :clock8:
+September: :clock9:
+October: :clock10:
+November: :clock11:
+December: :clock12:
 
 Votes:
 ";

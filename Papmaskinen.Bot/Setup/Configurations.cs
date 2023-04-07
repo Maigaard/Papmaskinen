@@ -37,7 +37,7 @@ internal static class Configurations
 		{
 			DiscordSocketConfig socketConfig = new()
 			{
-				// Bot permissions: 1376738487360
+				// Bot permissions: 277226859584
 				GatewayIntents =
 					GatewayIntents.Guilds |
 					GatewayIntents.GuildEmojis |
