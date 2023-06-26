@@ -76,7 +76,7 @@ public class NextEvent : AbstractCronJob
 		foreach (var user in guild.Users)
 		{
 			this.logger.LogInformation("Attempting to nickname {DisplayName}", user.DisplayName);
-			await user.UpdateNickName(suffix: Emotes.Clocks[currentMonth].ToString());
+			await user.UpdateNickName(suffix: Emotes.Clocks[currentMonth - 1].ToString());
 		}
 	}
 
