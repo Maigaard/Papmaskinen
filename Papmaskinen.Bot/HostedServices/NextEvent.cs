@@ -37,7 +37,7 @@ public class NextEvent : AbstractCronJob
 			DateTimeOffset lastDayOfMonth = new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, this.TimeZoneInfo.BaseUtcOffset)
 				.AddMonths(1)
 				.AddDays(-1);
-			DateTimeOffset date = this.FindFriday(lastDayOfMonth);
+			DateTimeOffset date = FindFriday(lastDayOfMonth);
 			var message = await ch.SendMessageAsync(
 				string.Format(MessageTemplates.NextEventMessage, date.ToString("D")),
 				allowedMentions: new AllowedMentions(AllowedMentionTypes.Everyone));
@@ -68,6 +68,19 @@ public class NextEvent : AbstractCronJob
 		}
 	}
 
+	private static DateTimeOffset FindFriday(DateTimeOffset date)
+	{
+		while (true)
+		{
+			if (date.DayOfWeek == DayOfWeek.Friday)
+			{
+				return date;
+			}
+
+			date = date.AddDays(-1);
+		}
+	}
+
 	private async Task UpdateUserNicknames()
 	{
 		int currentMonth = DateTime.Now.Month;
@@ -78,11 +91,6 @@ public class NextEvent : AbstractCronJob
 			this.logger.LogInformation("Attempting to nickname {DisplayName}", user.DisplayName);
 			await user.UpdateNickName(suffix: Emotes.Clocks[currentMonth - 1].ToString());
 		}
-	}
-
-	private DateTimeOffset FindFriday(DateTimeOffset date)
-	{
-		return date.DayOfWeek == DayOfWeek.Friday ? date : this.FindFriday(date.AddDays(-1));
 	}
 
 	private async Task InitGameUpdate(DateTimeOffset date, ulong messageId, CancellationToken cancellationToken)
