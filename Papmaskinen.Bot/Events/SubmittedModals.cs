@@ -6,15 +6,8 @@ using SmartFormat;
 
 namespace Papmaskinen.Bot.Events;
 
-public class SubmittedModals
+public class SubmittedModals(BoardGameGeekService bggService)
 {
-	private readonly BoardGameGeekService bggService;
-
-	public SubmittedModals(BoardGameGeekService bggService)
-	{
-		this.bggService = bggService;
-	}
-
 	public async Task ModalSubmitted(SocketModal modal)
 	{
 		var bggLinkComponent = modal.Data.Components.Single(x => x.CustomId == "bgg-link");
@@ -24,7 +17,7 @@ public class SubmittedModals
 			return;
 		}
 
-		var game = await this.bggService.GetBoardGame(gameId);
+		var game = await bggService.GetBoardGame(gameId);
 		if (game == null)
 		{
 			await modal.RespondAsync($"Couldn't find a game with id: {gameId}", ephemeral: true);

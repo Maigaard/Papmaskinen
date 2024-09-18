@@ -12,9 +12,9 @@ public record Nomination
 		int.TryParse(bggItem.Maxplayers?.Value, out int maxPlayers);
 
 		this.Link = link;
-		this.Name = bggItem.Name?.FirstOrDefault(p => p.Type == "primary")?.Value;
+		this.Name = bggItem.Name?.Find(p => p.Type == "primary")?.Value;
 		this.Rating = rating;
-		string? limitedDescription = bggItem.Description?[0..Math.Min(bggItem.Description.Length, 1400)];
+		string? limitedDescription = bggItem.Description?[..Math.Min(bggItem.Description.Length, 1400)];
 		int? lastIndex = limitedDescription?.LastIndexOf("&#10;&#10;");
 		this.Description = lastIndex < 0 ? $"{limitedDescription}..." : limitedDescription![0..lastIndex!.Value];
 		this.Description = this.Description.Replace("&#10;&#10;", "\n\n");
@@ -26,7 +26,7 @@ public record Nomination
 
 	public string Link { get; set; }
 
-	public string? Description { get; set; }
+	private string? Description { get; set; }
 
 	public string Players { get; set; }
 

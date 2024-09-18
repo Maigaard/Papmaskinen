@@ -14,26 +14,10 @@ namespace Papmaskinen.Bot.Setup;
 
 internal static class Configurations
 {
-	internal static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
-	{
-		if (Environment.GetEnvironmentVariable("APP_CONFIG_STORE") is string appConfigStore)
-		{
-			var configurationUri = new Uri(appConfigStore);
-			builder.AddEnvironmentVariables();
-			builder.AddAzureAppConfiguration(options =>
-			{
-				TokenCredential tokenCredential = new DefaultAzureCredential();
-				options.Connect(configurationUri, tokenCredential);
-				options.Select(KeyFilter.Any);
-				options.Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName);
-			});
-		}
-	}
-
 	internal static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
 	{
 		services.Configure<DiscordSettings>(options => context.Configuration.Bind("Discord", options));
-		services.AddSingleton<DiscordSocketClient>(options =>
+		services.AddSingleton<DiscordSocketClient>(_ =>
 		{
 			DiscordSocketConfig socketConfig = new()
 			{

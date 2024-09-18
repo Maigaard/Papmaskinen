@@ -8,27 +8,18 @@ using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot.HostedServices;
 
-public class NextEvent : AbstractCronJob
+public class NextEvent(
+	ILogger<NextEvent> logger,
+	IOptionsMonitor<DiscordSettings> settings,
+	DiscordSocketClient client)
+	: AbstractCronJob(logger, settings.CurrentValue.NextEvent.Schedule)
 {
-	private readonly ILogger<NextEvent> logger;
-	private readonly DiscordSettings settings;
-	private readonly DiscordSocketClient client;
-
-	public NextEvent(
-		ILogger<NextEvent> logger,
-		IOptionsMonitor<DiscordSettings> settings,
-		DiscordSocketClient client)
-		: base(logger, settings.CurrentValue.NextEvent.Schedule)
-	{
-		this.logger = logger;
-		this.settings = settings.CurrentValue;
-		this.client = client;
-	}
+	private readonly DiscordSettings settings = settings.CurrentValue;
 
 	protected override async Task DoWork(CancellationToken cancellationToken)
 	{
 		await this.UpdateUserNicknames();
-		var channel = await this.client.GetChannelAsync(this.settings.NextEvent.ChannelId);
+		var channel = await client.GetChannelAsync(this.settings.NextEvent.ChannelId);
 		if (channel is ITextChannel ch)
 		{
 			await UnpinMessages(ch);
@@ -84,11 +75,11 @@ public class NextEvent : AbstractCronJob
 	private async Task UpdateUserNicknames()
 	{
 		int currentMonth = DateTime.Now.Month;
-		await this.client.Guilds.First().DownloadUsersAsync();
-		var guild = this.client.Guilds.First();
+		await client.Guilds.First().DownloadUsersAsync();
+		var guild = client.Guilds.First();
 		foreach (var user in guild.Users)
 		{
-			this.logger.LogInformation("Attempting to nickname {DisplayName}", user.DisplayName);
+			logger.LogInformation("Attempting to nickname {DisplayName}", user.DisplayName);
 			await user.UpdateNickName(suffix: Emotes.Clocks[currentMonth - 1].ToString());
 		}
 	}
@@ -96,7 +87,7 @@ public class NextEvent : AbstractCronJob
 	private async Task InitGameUpdate(DateTimeOffset date, ulong messageId, CancellationToken cancellationToken)
 	{
 		DateTimeOffset weekFromDate = date.AddDays(-7);
-		UpdateNextEventGame service = new(this.logger, weekFromDate, messageId, this.settings, this.client);
+		UpdateNextEventGame service = new(logger, weekFromDate, messageId, this.settings, client);
 		await service.StartAsync(cancellationToken);
 	}
 }

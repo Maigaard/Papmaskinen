@@ -4,7 +4,7 @@ using Papmaskinen.Integrations.Http.Services.SerializerSettings;
 
 namespace Papmaskinen.Integrations.Http.Services.Implementation;
 
-public class XmlSerializer : AbstractSerializer<XmlSettings>, ISerializer<XmlSettings>
+public class XmlSerializer : AbstractSerializer<XmlSettings>
 {
 	public override HttpContent Serialize<TContent>(TContent data, XmlSettings? settings = null)
 	{
@@ -33,7 +33,7 @@ public class XmlSerializer : AbstractSerializer<XmlSettings>, ISerializer<XmlSet
 		return result ?? default;
 	}
 
-	private class Utf8StringWriter : StringWriter
+	private sealed class Utf8StringWriter : StringWriter
 	{
 		public override Encoding Encoding => Encoding.UTF8;
 	}

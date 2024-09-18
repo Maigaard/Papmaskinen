@@ -2,18 +2,9 @@
 
 namespace Papmaskinen.Integrations.Http.Services.Implementation;
 
-public class SimpleHttpClient<TSettings> : ISimpleHttpClient
+public class SimpleHttpClient<TSettings>(HttpClient httpClient, ISerializer<TSettings> serializer) : ISimpleHttpClient
 	where TSettings : class
 {
-	private readonly HttpClient httpClient;
-	private readonly ISerializer<TSettings> serializer;
-
-	public SimpleHttpClient(HttpClient httpClient, ISerializer<TSettings> serializer)
-	{
-		this.httpClient = httpClient;
-		this.serializer = serializer;
-	}
-
 	public virtual async Task<bool> DeleteAsync(string url)
 	{
 		if (string.IsNullOrWhiteSpace(url))
@@ -21,60 +12,45 @@ public class SimpleHttpClient<TSettings> : ISimpleHttpClient
 			throw new ArgumentException("message", nameof(url));
 		}
 
-		using (var response = await this.MakeRequestAsync(url, HttpMethod.Delete))
+		using var response = await this.MakeRequestAsync(url, HttpMethod.Delete);
+		try
 		{
-			try
-			{
-				await this.ValidateResponseAsync(response, defaultIfNotFound: false);
-				return true;
-			}
-			catch
-			{
-				return false;
-			}
+			await this.ValidateResponseAsync(response, defaultIfNotFound: false);
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
 	public virtual async Task<TResult?> GetAsync<TResult>(string url, bool defaultIfNotFound = false)
 	{
-		using (var response = await this.GetRequestAsync(url))
-		{
-			await this.ValidateResponseAsync(response, defaultIfNotFound);
+		using var response = await this.GetRequestAsync(url);
+		await this.ValidateResponseAsync(response, defaultIfNotFound);
 
-			return await this.serializer.DeserializeAsync<TResult>(response, defaultIfNotFound);
-		}
+		return await serializer.DeserializeAsync<TResult>(response, defaultIfNotFound);
 	}
 
 	public virtual async Task<TResult?> PostAsync<TResult>(string url, object? data)
 	{
-		TResult? result = default;
+		HttpContent? content = data == null ? null : serializer.Serialize(data);
 
-		HttpContent? content = data == null ? null : this.serializer.Serialize(data);
-
-		using (var response = await this.MakeRequestAsync(url, HttpMethod.Post, content))
-		{
-			await this.ValidateResponseAsync(response, defaultIfNotFound: false);
-			result = await this.serializer.DeserializeAsync<TResult>(response);
-		}
+		using var response = await this.MakeRequestAsync(url, HttpMethod.Post, content);
+		await this.ValidateResponseAsync(response, defaultIfNotFound: false);
+		TResult? result = await serializer.DeserializeAsync<TResult>(response);
 
 		return result;
 	}
 
 	public virtual async Task<TResult?> PutAsync<TResult>(string url, object data)
 	{
-		TResult? result = default;
+		ArgumentNullException.ThrowIfNull(data);
 
-		if (data is null)
-		{
-			throw new ArgumentNullException(nameof(data));
-		}
-
-		var content = this.serializer.Serialize(data);
-		using (var response = await this.MakeRequestAsync(url, HttpMethod.Put, content))
-		{
-			await this.ValidateResponseAsync(response, defaultIfNotFound: true);
-			result = await this.serializer.DeserializeAsync<TResult>(response);
-		}
+		var content = serializer.Serialize(data);
+		using var response = await this.MakeRequestAsync(url, HttpMethod.Put, content);
+		await this.ValidateResponseAsync(response, defaultIfNotFound: true);
+		TResult? result = await serializer.DeserializeAsync<TResult>(response);
 
 		return result;
 	}
@@ -93,28 +69,19 @@ public class SimpleHttpClient<TSettings> : ISimpleHttpClient
 			Content = content,
 		};
 
-		var response = await this.httpClient.SendAsync(message);
+		var response = await httpClient.SendAsync(message);
 
 		return response;
 	}
 
 	public virtual Task ValidateResponseAsync(HttpResponseMessage response, bool defaultIfNotFound)
 	{
-		try
+		if (!defaultIfNotFound || response.StatusCode != HttpStatusCode.NotFound)
 		{
-			if (!defaultIfNotFound || response.StatusCode != HttpStatusCode.NotFound)
-			{
-				response.EnsureSuccessStatusCode();
-			}
+			response.EnsureSuccessStatusCode();
+		}
 
-			return Task.CompletedTask;
-		}
-		catch (Exception)
-		{
-			// var body = await response.Content.ReadAsStringAsync();
-			// this.logger.LogError(ex, $"The API returned the following message: ({(int)response.StatusCode}){response.ReasonPhrase}: {body}");
-			throw;
-		}
+		return Task.CompletedTask;
 	}
 
 	protected virtual Task<HttpResponseMessage> GetRequestAsync(string url)

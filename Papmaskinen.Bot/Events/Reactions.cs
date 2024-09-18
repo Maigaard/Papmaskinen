@@ -8,14 +8,9 @@ using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot.Events;
 
-public partial class Reactions
+public partial class Reactions(IOptionsMonitor<DiscordSettings> options)
 {
-	private readonly DiscordSettings settings;
-
-	public Reactions(IOptionsMonitor<DiscordSettings> options)
-	{
-		this.settings = options.CurrentValue;
-	}
+	private readonly DiscordSettings settings = options.CurrentValue;
 
 	internal async Task NextEventReactions(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
 	{
@@ -24,10 +19,10 @@ public partial class Reactions
 			reaction.UserId != this.settings.BotId &&
 			message?.Author?.IsBot == true)
 		{
-			await ReactToEmote(reaction, message!, Emotes.ThumbsUp, "Attending");
-			await ReactToEmote(reaction, message!, Emotes.FingersCrossed, "Hopefully");
-			await ReactToEmote(reaction, message!, Emotes.House, "- Place");
-			await ReactToEmote(reaction, message!, Emotes.GameDie, "- Game Master");
+			await ReactToEmote(reaction, message, Emotes.ThumbsUp, "Attending");
+			await ReactToEmote(reaction, message, Emotes.FingersCrossed, "Hopefully");
+			await ReactToEmote(reaction, message, Emotes.House, "- Place");
+			await ReactToEmote(reaction, message, Emotes.GameDie, "- Game Master");
 		}
 	}
 
@@ -59,7 +54,7 @@ public partial class Reactions
 			reaction.Emote.Name == Emotes.RedX.Name)
 		{
 			IUserMessage message = await messageCache.GetOrDownloadAsync();
-			if (message.Interaction.User.Id == reaction.UserId)
+			if (message.InteractionMetadata.User.Id == reaction.UserId)
 			{
 				IMessageChannel channel = await channelCache.GetOrDownloadAsync();
 				await UpdateNominationVotes(message.Content, -1, channel);
@@ -73,7 +68,7 @@ public partial class Reactions
 		IUserMessage pinnedMessage = await GetPinnedMessage(channel);
 		string nominationTitle = NominationTitle().Match(nominationContent).Value.TrimEnd();
 
-		var titleRegex = new Regex($@"^({nominationTitle} : )([0-9]{{1,3}})", RegexOptions.Multiline);
+		var titleRegex = new Regex($"^({nominationTitle} : )([0-9]{{1,3}})", RegexOptions.Multiline);
 		string nominationReplacement = nominationVotes >= 0
 			? $"{nominationTitle} : {nominationVotes}"
 			: string.Empty;
@@ -108,17 +103,17 @@ public partial class Reactions
 		if (reaction.Emote.Name == emote.Name)
 		{
 			string usernames = await GetUserNames(message, emote);
-			await message!.ModifyAsync(prop => prop.EditContent(messagePrefix, message.Content, usernames));
+			await message.ModifyAsync(prop => prop.EditContent(messagePrefix, message.Content, usernames));
 		}
 	}
 
 	private static async Task<string> GetUserNames(IUserMessage message, IEmote emote)
 	{
 		var users = await message.GetReactionUsersAsync(emote, 20).FlattenAsync();
-		var userNames = users.Where(u => !u.IsBot).Select(u => u is IGuildUser user ? user.DisplayName : u.Username);
+		var userNames = users.Where(u => !u.IsBot).Select(u => u is IGuildUser user ? user.DisplayName : u.Username).ToList();
 		return userNames.Any() ? string.Join(", ", userNames) : "TBD";
 	}
 
-	[GeneratedRegex("^([\\w]+[\\w:\\- ]*)")]
+	[GeneratedRegex(@"^([\w]+[\w:\- ]*)")]
 	private static partial Regex NominationTitle();
 }

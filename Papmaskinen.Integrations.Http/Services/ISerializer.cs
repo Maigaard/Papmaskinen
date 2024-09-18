@@ -1,6 +1,6 @@
 ﻿namespace Papmaskinen.Integrations.Http.Services;
 
-public interface ISerializer<TSettings>
+public interface ISerializer<in TSettings>
 	where TSettings : class
 {
 	HttpContent Serialize<TContent>(TContent data, TSettings? settings = null)

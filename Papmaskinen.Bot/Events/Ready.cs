@@ -7,33 +7,24 @@ using Papmaskinen.Bot.Setup;
 
 namespace Papmaskinen.Bot.Events;
 
-public class Ready
+public class Ready(ILogger<Ready> logger, IOptionsMonitor<DiscordSettings> options, DiscordSocketClient client)
 {
-	private readonly ILogger<Ready> logger;
-	private readonly DiscordSocketClient client;
-	private readonly DiscordSettings settings;
-
-	public Ready(ILogger<Ready> logger, IOptionsMonitor<DiscordSettings> options, DiscordSocketClient client)
-	{
-		this.settings = options.CurrentValue;
-		this.logger = logger;
-		this.client = client;
-	}
+	private readonly DiscordSettings settings = options.CurrentValue;
 
 	internal async Task InstallCommands()
 	{
-		var guild = this.client.GetGuild(this.settings.GuildId);
+		var guild = client.GetGuild(this.settings.GuildId);
 		if (guild is null)
 		{
-			this.logger.LogWarning("Couldn't find guild.");
+			logger.LogWarning("Couldn't find guild.");
 			return;
 		}
 
-		IEnumerable<CommandInfoAttribute> botCommands = GetCommands();
+		IEnumerable<CommandInfoAttribute> botCommands = GetCommands().ToList();
 		IReadOnlyCollection<SocketApplicationCommand> applicationCommands = await guild.GetApplicationCommandsAsync();
 		if (botCommands.ExceptBy(applicationCommands.Select(bc => bc.Name), ac => ac.CommandName).Any())
 		{
-			this.logger.LogInformation("Commands already installed.");
+			logger.LogInformation("Commands already installed.");
 			return;
 		}
 

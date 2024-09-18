@@ -18,10 +18,9 @@ internal static class UserExtensions
 			string nickname = $"{prefix}{cleanedDisplayName}{suffix}";
 			await user.ModifyAsync(u => u.Nickname = nickname);
 		}
-
-		// Catching Discord HttpException when Bot doens't have permission to edit superior user.
 		catch (HttpException e) when (e.Message.Contains("error 50013"))
 		{
+			// Catching Discord HttpException when Bot doens't have permission to edit superior user.
 		}
 	}
 }

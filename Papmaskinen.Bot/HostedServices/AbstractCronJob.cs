@@ -4,20 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Papmaskinen.Bot.HostedServices;
 
-public abstract class AbstractCronJob : IHostedService, IDisposable
+public abstract class AbstractCronJob(ILogger<AbstractCronJob> logger, string expression) : IHostedService, IDisposable
 {
-	private readonly ILogger<AbstractCronJob> logger;
-	private readonly CronExpression expression;
-	private Timer? timer = null;
+	private readonly CronExpression expression = CronExpression.Parse(expression);
+	private Timer? timer;
 
-	public AbstractCronJob(ILogger<AbstractCronJob> logger, string expression)
-	{
-		this.logger = logger;
-		this.expression = CronExpression.Parse(expression);
-		this.TimeZoneInfo = TimeZoneInfo.Local;
-	}
-
-	protected TimeZoneInfo TimeZoneInfo { get; }
+	protected TimeZoneInfo TimeZoneInfo { get; } = TimeZoneInfo.Local;
 
 	public Task StartAsync(CancellationToken cancellationToken)
 	{
@@ -26,7 +18,7 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 
 	public Task StopAsync(CancellationToken cancellationToken)
 	{
-		this.logger.LogInformation("Timed Hosted Service is stopping.");
+		logger.LogInformation("Timed Hosted Service is stopping.");
 
 		this.timer?.Change(Timeout.Infinite, 0);
 
@@ -47,7 +39,7 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 
 	protected virtual Task DoWork(CancellationToken cancellationToken)
 	{
-		this.logger.LogInformation("No job has been initiated");
+		logger.LogInformation("No job has been initiated");
 		return Task.CompletedTask;
 	}
 
@@ -57,7 +49,7 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 		if (next.HasValue)
 		{
 			string date = next.Value.ToLocalTime().ToString("f");
-			this.logger.LogInformation("{Name}'s next job is scheduled for {date}", this.GetType().Name, date);
+			logger.LogInformation("{Name}'s next job is scheduled for {Date}", this.GetType().Name, date);
 			var delay = next.Value - DateTimeOffset.Now;
 			if (delay.TotalMilliseconds <= 0)
 			{
@@ -65,10 +57,13 @@ public abstract class AbstractCronJob : IHostedService, IDisposable
 			}
 
 			this.timer = new Timer(
-				async (state) =>
+				async _ =>
 				{
-					this.timer?.Dispose();
-					this.timer = null;
+					if (this.timer != null)
+					{
+						await this.timer.DisposeAsync();
+						this.timer = null;
+					}
 
 					if (!cancellationToken.IsCancellationRequested)
 					{
