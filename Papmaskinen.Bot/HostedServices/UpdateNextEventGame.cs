@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Papmaskinen.Bot.Extensions;
 using Papmaskinen.Bot.Setup;
@@ -14,55 +13,19 @@ internal sealed partial class UpdateNextEventGame(
 	ulong messageId,
 	DiscordSettings settings,
 	DiscordSocketClient client)
-	: IHostedService, IDisposable
+	: AbstractHostedService(logger)
 {
-	private Timer? timer = null;
-
-	public Task StartAsync(CancellationToken cancellationToken)
+	public override Task StartAsync(CancellationToken cancellationToken)
 	{
 		TimeSpan delay = date - DateTimeOffset.Now;
 		logger.LogInformation("Starting event update in: {Delay} ms", delay.TotalMilliseconds);
 
-		this.timer = new Timer(
-			async _ =>
-			{
-				if (this.timer != null)
-				{
-					await this.timer.DisposeAsync();
-					this.timer = null;
-				}
-
-				if (!cancellationToken.IsCancellationRequested)
-				{
-					await this.DoWork(cancellationToken);
-				}
-			},
-			null,
-			(uint)delay.TotalMilliseconds,
-			Timeout.Infinite);
+		this.SetTimer(delay, cancellationToken);
 
 		return Task.CompletedTask;
 	}
 
-	public Task StopAsync(CancellationToken cancellationToken)
-	{
-		logger.LogInformation("Timed Hosted Service is stopping.");
-
-		this.timer?.Change(Timeout.Infinite, 0);
-
-		return Task.CompletedTask;
-	}
-
-	public void Dispose()
-	{
-		this.timer?.Dispose();
-		GC.SuppressFinalize(this);
-	}
-
-	[GeneratedRegex("^([\\w: -]+) : ([0-9]{1,3})", RegexOptions.Multiline)]
-	private static partial Regex GetNominationVotesRegex();
-
-	private async Task DoWork(CancellationToken cancellationToken)
+	protected override async Task DoWork(CancellationToken cancellationToken)
 	{
 		if (await client.GetChannelAsync(settings.NextEvent.ChannelId) is ITextChannel nextEventChannel
 			&& await client.GetChannelAsync(settings.Nominations.ChannelId) is ITextChannel nominationChannel
@@ -84,4 +47,12 @@ internal sealed partial class UpdateNextEventGame(
 		logger.LogInformation("Starting event update");
 		await this.StopAsync(cancellationToken);
 	}
+
+	protected override Task ScheduleJob(CancellationToken cancellationToken)
+	{
+		return Task.CompletedTask;
+	}
+
+	[GeneratedRegex("^([\\w: -]+) : ([0-9]{1,3})", RegexOptions.Multiline)]
+	private static partial Regex GetNominationVotesRegex();
 }

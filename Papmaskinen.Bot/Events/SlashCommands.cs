@@ -1,18 +1,21 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Papmaskinen.Bot.HostedServices;
 using Papmaskinen.Bot.Models.Attributes;
 
 namespace Papmaskinen.Bot.Events;
 
-internal static class SlashCommands
+public class SlashCommands(NextEvent nextEventHandler)
 {
 	private const string NominateCommandName = "nominate";
+	private const string ForceNextEvent = "forceNextEvent";
 
-	internal static async Task SlashCommandReceived(SocketSlashCommand command)
+	internal async Task SlashCommandReceived(SocketSlashCommand command)
 	{
 		var task = command.Data.Name switch
 		{
 			NominateCommandName => ExecuteNominateCommand(command),
+			ForceNextEvent => this.ExecuteForceNextEventCommand(command),
 			_ => command.RespondAsync("Unknown command!"),
 		};
 
@@ -29,5 +32,12 @@ internal static class SlashCommands
 		var modal = modalBuilder.Build();
 
 		await command.RespondWithModalAsync(modal);
+	}
+
+	[CommandInfo(ForceNextEvent, "Force a Next Event message, in case the Papmaskinen forgot.")]
+	private async Task ExecuteForceNextEventCommand(IDiscordInteraction command)
+	{
+		nextEventHandler.SetTimer(TimeSpan.FromSeconds(1), cancellationToken: CancellationToken.None);
+		await command.RespondAsync("Force next event message has been initiated", ephemeral: true);
 	}
 }

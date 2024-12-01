@@ -13,7 +13,8 @@ public class ConfigureSocketClient(
 	Reactions reactions,
 	Ready ready,
 	SubmittedModals submittedModals,
-	Messages messages)
+	Messages messages,
+	SlashCommands slashCommands)
 {
 	private readonly DiscordSettings settings = settings.CurrentValue;
 
@@ -26,7 +27,7 @@ public class ConfigureSocketClient(
 		};
 
 		client.Ready += ready.InstallCommands;
-		client.SlashCommandExecuted += SlashCommands.SlashCommandReceived;
+		client.SlashCommandExecuted += slashCommands.SlashCommandReceived;
 		client.MessageReceived += messages.MessageReceived;
 		client.ReactionAdded += reactions.RemoveBotPostReaction;
 		client.ReactionAdded += reactions.NextEventReactions;

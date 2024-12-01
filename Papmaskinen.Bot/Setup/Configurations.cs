@@ -1,9 +1,6 @@
-﻿using Azure.Core;
-using Azure.Identity;
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Papmaskinen.Bot.Events;
@@ -39,8 +36,10 @@ internal static class Configurations
 		services.AddSingleton<Ready>();
 		services.AddSingleton<SubmittedModals>();
 		services.AddSingleton<Messages>();
+		services.AddSingleton<SlashCommands>();
 
 		services.AddSingleton<ConfigureSocketClient>();
-		services.AddHostedService<NextEvent>();
+		services.AddSingleton<NextEvent>();
+		services.AddHostedService<NextEvent>(p => p.GetRequiredService<NextEvent>());
 	}
 }

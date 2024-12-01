@@ -43,7 +43,7 @@ public class NextEvent(
 			};
 			await message.AddReactionsAsync(reactions);
 			await message.PinAsync();
-			await this.InitGameUpdate(date, message.Id, cancellationToken);
+			await this.InitializeGameUpdate(date, message.Id, cancellationToken);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class NextEvent(
 		}
 	}
 
-	private async Task InitGameUpdate(DateTimeOffset date, ulong messageId, CancellationToken cancellationToken)
+	private async Task InitializeGameUpdate(DateTimeOffset date, ulong messageId, CancellationToken cancellationToken)
 	{
 		DateTimeOffset weekFromDate = date.AddDays(-7);
 		UpdateNextEventGame service = new(logger, weekFromDate, messageId, this.settings, client);
