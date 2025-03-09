@@ -22,7 +22,7 @@ public class Ready(ILogger<Ready> logger, IOptionsMonitor<DiscordSettings> optio
 
 		IEnumerable<CommandInfoAttribute> botCommands = GetCommands().ToList();
 		IReadOnlyCollection<SocketApplicationCommand> applicationCommands = await guild.GetApplicationCommandsAsync();
-		if (botCommands.ExceptBy(applicationCommands.Select(bc => bc.Name), ac => ac.CommandName).Any())
+		if (botCommands.ExceptBy(applicationCommands.Select(bc => bc.Name), ac => ac.CommandName).Any() == false)
 		{
 			logger.LogInformation("Commands already installed.");
 			return;

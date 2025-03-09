@@ -9,18 +9,18 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development",
+                "ASPNETCORE_ENVIRONMENT" : "Development"
+            },
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Papmaskinen.Bot/bin/Debug/net7.0/Papmaskinen.Bot.dll",
+            "program": "${workspaceFolder}/Papmaskinen.Bot/bin/Debug/net9.0/Papmaskinen.Bot.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Papmaskinen.Bot",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
-            "stopAtEntry": false
-        },
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach"
+            "stopAtEntry": false,
+            "launchSettingsFilePath": "${workspaceFolder}/Papmaskinen.Bot/Properties/launchSettings.json",
         }
     ]
 }

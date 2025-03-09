@@ -40,6 +40,6 @@ internal static class Configurations
 
 		services.AddSingleton<ConfigureSocketClient>();
 		services.AddSingleton<NextEvent>();
-		services.AddHostedService<NextEvent>(p => p.GetRequiredService<NextEvent>());
+		services.AddHostedService(p => p.GetRequiredService<NextEvent>());
 	}
 }
